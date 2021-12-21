@@ -1,0 +1,5 @@
+package hasher
+
+func main() {
+
+}
