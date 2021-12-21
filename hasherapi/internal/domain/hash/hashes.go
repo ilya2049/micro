@@ -42,8 +42,15 @@ func (sha3Hashes SHA3Hashes) NewIdentifiedSHA3Hashes(hashIDs []ID) []IdentifiedS
 type ID int
 
 type IdentifiedSHA3Hash struct {
-	sha3Hash SHA3Hash
 	id       ID
+	sha3Hash SHA3Hash
+}
+
+func NewIdentifiedSHA3Hash(id ID, sha3Hash SHA3Hash) IdentifiedSHA3Hash {
+	return IdentifiedSHA3Hash{
+		id:       id,
+		sha3Hash: sha3Hash,
+	}
 }
 
 func (h IdentifiedSHA3Hash) SHA3Hash() SHA3Hash {
