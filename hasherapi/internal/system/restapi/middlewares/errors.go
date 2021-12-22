@@ -1,48 +1,68 @@
 package middlewares
 
 import (
-	"log"
+	"hasherapi/internal/app/log"
 	"net/http"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 )
 
-type Responser struct {
+func NewResponderFactory(logger log.Logger) *ResponserFactory {
+	return &ResponserFactory{
+		logger: logger,
+	}
+}
+
+type ResponserFactory struct {
+	logger log.Logger
+}
+
+func (f *ResponserFactory) NewInternalErrorResponder(responder middleware.Responder, err error) middleware.Responder {
+	return newResponder(responder, err, f.logger, http.StatusInternalServerError)
+}
+
+func (f *ResponserFactory) NewBadRequestErrorResponder(responder middleware.Responder, err error) middleware.Responder {
+	return newResponder(responder, err, f.logger, http.StatusBadRequest)
+}
+
+func newResponder(
+	responder middleware.Responder,
+	err error,
+	logger log.Logger,
+	httpStatus int,
+) *Responder {
+	return &Responder{
+		next:       responder,
+		err:        err,
+		logger:     logger,
+		httpStatus: httpStatus,
+	}
+}
+
+type Responder struct {
 	next middleware.Responder
+
+	logger log.Logger
 
 	err        error
 	httpStatus int
 }
 
-func (r *Responser) WriteResponse(w http.ResponseWriter, p runtime.Producer) {
-	message := r.err.Error()
+const errorMessage = "rest api error"
 
+func (r *Responder) WriteResponse(w http.ResponseWriter, p runtime.Producer) {
 	switch r.httpStatus {
 	case http.StatusBadRequest:
-		message = "warn: " + message
+		r.logger.LogWarn(errorMessage, log.Details{
+			log.FieldError: r.err.Error(),
+		})
 
 	default:
-		message = "error: " + message
+		r.logger.LogError(errorMessage, log.Details{
+			log.FieldError: r.err.Error(),
+		})
 	}
-
-	log.Println(message)
 
 	r.next.WriteResponse(w, p)
-}
-
-func NewInternalErrorResponder(responder middleware.Responder, err error) middleware.Responder {
-	return &Responser{
-		next:       responder,
-		err:        err,
-		httpStatus: http.StatusInternalServerError,
-	}
-}
-
-func NewBadRequestErrorResponder(responder middleware.Responder, err error) middleware.Responder {
-	return &Responser{
-		next:       responder,
-		err:        err,
-		httpStatus: http.StatusBadRequest,
-	}
 }

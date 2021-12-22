@@ -11,6 +11,7 @@ require (
 	github.com/go-openapi/swag v0.19.15
 	github.com/go-openapi/validate v0.20.3
 	github.com/jessevdk/go-flags v1.5.0
+	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.7.0
 	golang.org/x/net v0.0.0-20211216030914-fe4d6282115f
 )
@@ -26,6 +27,7 @@ require (
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
