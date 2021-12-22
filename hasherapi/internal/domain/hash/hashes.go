@@ -1,5 +1,7 @@
 package hash
 
+import "strconv"
+
 type Input string
 
 func NewInputs(strings []string) []Input {
@@ -40,6 +42,13 @@ func (sha3Hashes SHA3Hashes) NewIdentifiedSHA3Hashes(hashIDs []ID) []IdentifiedS
 }
 
 type ID int
+
+func NewIDFromString(s string) ID {
+	// TODO: handle an error
+	id, _ := strconv.Atoi(s)
+
+	return ID(id)
+}
 
 type IdentifiedSHA3Hash struct {
 	id       ID
