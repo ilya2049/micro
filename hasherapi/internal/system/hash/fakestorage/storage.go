@@ -1,4 +1,4 @@
-package fake
+package fakestorage
 
 import (
 	"context"
@@ -51,8 +51,15 @@ func (s *HashStorage) Get(_ context.Context, hashIDs []hash.ID) ([]hash.Identifi
 			continue
 		}
 
-		identifiedHashes = append(identifiedHashes, hash.NewIdentifiedSHA3Hash(hashID, s.hashes[hashID]))
+		identifiedHashes = append(identifiedHashes, hash.NewIdentifiedSHA3Hash(
+			hashID,
+			s.hashes[hashIDToHashIndex(hashID)]),
+		)
 	}
 
 	return identifiedHashes, nil
+}
+
+func hashIDToHashIndex(hashID hash.ID) int {
+	return int(hashID) - 1
 }
