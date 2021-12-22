@@ -2,6 +2,7 @@ package handler
 
 import (
 	"hasherapi/internal/domain/hash"
+	"hasherapi/internal/system/restapi/middlewares"
 	"hasherapi/internal/system/restapi/operations"
 
 	"github.com/go-openapi/runtime/middleware"
@@ -18,13 +19,16 @@ type hashHandler struct {
 }
 
 func (h *Handler) GetCheck(params operations.GetCheckParams) middleware.Responder {
-	hashIDs := getCheckParamsToHashIDs(params)
+	hashIDs, err := hash.NewIDsFromStrings(params.Ids)
+	if err != nil {
+		return middlewares.NewBadRequestErrorResponder(operations.NewGetCheckBadRequest(), err)
+	}
 
 	ctx := params.HTTPRequest.Context()
 
 	identifiedHashes, err := h.hashService.FindHashes(ctx, hashIDs)
 	if err != nil {
-		return operations.NewPostSendInternalServerError()
+		return middlewares.NewInternalErrorResponder(operations.NewGetCheckInternalServerError(), err)
 	}
 
 	if len(identifiedHashes) == 0 {

@@ -33,13 +33,3 @@ func identifiedHashToHash(identifiedSHA3Hash hash.IdentifiedSHA3Hash) *models.Ha
 		ID:   conv.PointerInt64(int64(identifiedSHA3Hash.ID())),
 	}
 }
-
-func getCheckParamsToHashIDs(params operations.GetCheckParams) []hash.ID {
-	hashIDs := make([]hash.ID, 0, len(params.Ids))
-
-	for _, id := range params.Ids {
-		hashIDs = append(hashIDs, hash.NewIDFromString(id))
-	}
-
-	return hashIDs
-}

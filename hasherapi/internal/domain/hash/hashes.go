@@ -1,6 +1,10 @@
 package hash
 
-import "strconv"
+import (
+	"errors"
+	"fmt"
+	"strconv"
+)
 
 type Input string
 
@@ -43,11 +47,34 @@ func (sha3Hashes SHA3Hashes) NewIdentifiedSHA3Hashes(hashIDs []ID) []IdentifiedS
 
 type ID int
 
-func NewIDFromString(s string) ID {
-	// TODO: handle an error
-	id, _ := strconv.Atoi(s)
+var errIDMustBeInt = errors.New("hash id must be an integer value")
 
-	return ID(id)
+func newIDFromString(s string) (ID, error) {
+	id, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, fmt.Errorf("%w: %s", errIDMustBeInt, s)
+	}
+
+	return ID(id), nil
+}
+
+func NewIDsFromStrings(strings []string) ([]ID, error) {
+	var (
+		id  ID
+		ids = make([]ID, 0, len(strings))
+		err error
+	)
+
+	for _, s := range strings {
+		id, err = newIDFromString(s)
+		if err != nil {
+			return []ID{}, err
+		}
+
+		ids = append(ids, id)
+	}
+
+	return ids, nil
 }
 
 type IdentifiedSHA3Hash struct {
