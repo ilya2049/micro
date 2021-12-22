@@ -7,24 +7,24 @@ import (
 	"hasherapi/internal/domain/hash"
 )
 
-func NewStorage() *Storage {
-	return &Storage{}
+func New() *HashStorage {
+	return &HashStorage{}
 }
 
-type Storage struct {
+type HashStorage struct {
 	mutex  sync.RWMutex
 	hashes hash.SHA3Hashes
 }
 
-func (s *Storage) nextID() hash.ID {
+func (s *HashStorage) nextID() hash.ID {
 	return s.lastID() + 1
 }
 
-func (s *Storage) lastID() hash.ID {
+func (s *HashStorage) lastID() hash.ID {
 	return hash.ID(len(s.hashes))
 }
 
-func (s *Storage) Save(_ context.Context, sha3Hashes hash.SHA3Hashes) ([]hash.IdentifiedSHA3Hash, error) {
+func (s *HashStorage) Save(_ context.Context, sha3Hashes hash.SHA3Hashes) ([]hash.IdentifiedSHA3Hash, error) {
 	s.mutex.Lock()
 	defer s.mutex.Unlock()
 
@@ -40,7 +40,7 @@ func (s *Storage) Save(_ context.Context, sha3Hashes hash.SHA3Hashes) ([]hash.Id
 	return identifiedHashes, nil
 }
 
-func (s *Storage) Get(_ context.Context, hashIDs []hash.ID) ([]hash.IdentifiedSHA3Hash, error) {
+func (s *HashStorage) Get(_ context.Context, hashIDs []hash.ID) ([]hash.IdentifiedSHA3Hash, error) {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
