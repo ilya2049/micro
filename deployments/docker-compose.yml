@@ -3,7 +3,7 @@ version: "3"
 services:
   hasherapi:
     build:
-      context: ../hasherapi
-      dockerfile: build/Dockerfile
+      context: ../
+      dockerfile: build/hasherapi/Dockerfile
     ports:
       - "8080:8080"

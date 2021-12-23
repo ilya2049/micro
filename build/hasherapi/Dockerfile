@@ -1,6 +1,7 @@
 FROM golang:1.17 AS builder
-COPY . /go/src/
-WORKDIR /go/src/cmd/hasherapi
+COPY ./hasherapi /go/src/hasherapi
+COPY ./common /go/src/common
+WORKDIR /go/src/hasherapi/cmd/hasherapi
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags='-w -s' -o /go/bin/hasherapi
 
