@@ -34,17 +34,11 @@ type Handler struct {
 	aLogger log.Logger
 }
 
-func (h *Handler) ConfigureFlags(api *operations.HasherapiAPI) {
+func (h *Handler) ConfigureFlags(api *operations.HasherapiAPI) {}
 
-}
+func (h *Handler) ConfigureTLS(tlsConfig *tls.Config) {}
 
-func (h *Handler) ConfigureTLS(tlsConfig *tls.Config) {
-
-}
-
-func (h *Handler) ConfigureServer(s *http.Server, scheme, addr string) {
-
-}
+func (h *Handler) ConfigureServer(s *http.Server, scheme, addr string) {}
 
 func (h *Handler) CustomConfigure(api *operations.HasherapiAPI) {
 	api.Logger = h.aLogger.Printf
@@ -55,5 +49,8 @@ func (h *Handler) SetupMiddlewares(handler http.Handler) http.Handler {
 }
 
 func (h *Handler) SetupGlobalMiddleware(handler http.Handler) http.Handler {
+	handler = middlewares.Logging(handler, h.aLogger)
+	handler = middlewares.TraceRequest(handler)
+
 	return handler
 }

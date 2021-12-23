@@ -4,6 +4,7 @@ import (
 	"context"
 	"hasherapi/internal/app/log"
 	"hasherapi/internal/domain/hash"
+	"hasherapi/internal/pkg/httputil/requestid"
 )
 
 func WrapCalculatorWithLogger(calculator hash.Calculator, logger log.Logger) hash.Calculator {
@@ -22,7 +23,10 @@ type calculatorLoggingWrapper struct {
 const messageHashCalculatorCalculate = "hashCalculator.Calculate"
 
 func (c *calculatorLoggingWrapper) Calculate(ctx context.Context, inputs []hash.Input) (hash.SHA3Hashes, error) {
+	requestID := requestid.Get(ctx)
+
 	c.logger.LogDebug(messageHashCalculatorCalculate, log.Details{
+		log.FieldRequestID:  requestID,
 		log.FieldHashInputs: inputs,
 	})
 
@@ -30,6 +34,7 @@ func (c *calculatorLoggingWrapper) Calculate(ctx context.Context, inputs []hash.
 
 	if err == nil {
 		c.logger.LogDebug(messageHashCalculatorCalculate, log.Details{
+			log.FieldRequestID:      requestID,
 			log.FieldHashSHA3Hashes: sha3Hashes,
 		})
 	}
