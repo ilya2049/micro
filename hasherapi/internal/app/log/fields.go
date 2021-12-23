@@ -12,6 +12,8 @@ const (
 )
 
 const (
-	FieldHashInputs     = "hash_inputs"
-	FieldHashSHA3Hashes = "sha3_hashes"
+	FieldHashInputs               = "hash_inputs"
+	FieldHashSHA3Hashes           = "sha3_hashes"
+	FieldHashIdentifiedSHA3Hashes = "identified_sha3_hashes"
+	FieldHashIDs                  = "hash_ids"
 )

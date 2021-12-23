@@ -96,3 +96,7 @@ func (h IdentifiedSHA3Hash) SHA3Hash() SHA3Hash {
 func (h IdentifiedSHA3Hash) ID() ID {
 	return h.id
 }
+
+func (h IdentifiedSHA3Hash) String() string {
+	return fmt.Sprintf("{id: %d; sha3_hash: %s}", h.ID(), h.SHA3Hash())
+}

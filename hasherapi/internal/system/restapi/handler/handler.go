@@ -17,7 +17,7 @@ func New() *Handler {
 	aLogger := logger.New()
 
 	hashCalculator := apphash.WrapCalculatorWithLogger(fakecalculator.New(), aLogger)
-	hashStorage := fakestorage.New()
+	hashStorage := apphash.WrapStorageWithLogger(fakestorage.New(), aLogger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
 	errorResponderFactory := middlewares.NewResponderFactory(aLogger)
