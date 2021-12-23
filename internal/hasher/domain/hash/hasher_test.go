@@ -1,8 +1,8 @@
 package hash_test
 
 import (
-	"hasher/internal/domain/hash"
-	"hasher/internal/pkg/hexutil"
+	"hasher/domain/hash"
+	"hasher/pkg/hexutil"
 
 	"testing"
 
