@@ -6,6 +6,8 @@ type Logger interface {
 	LogWarn(message string, details Details)
 	LogDebug(message string, details Details)
 
+	Level() Level
+
 	Printf(message string, details ...interface{})
 }
 

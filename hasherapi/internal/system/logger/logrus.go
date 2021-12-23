@@ -54,3 +54,22 @@ func (lg *Logger) write(level logrus.Level, message string, details log.Details)
 
 	lg.logrusLogger.WithFields(logrus.Fields(details)).Log(level, message)
 }
+
+func (lg *Logger) Level() log.Level {
+	switch lg.logrusLogger.Level {
+	case logrus.ErrorLevel:
+		return log.LevelError
+
+	case logrus.WarnLevel:
+		return log.LevelWarning
+
+	case logrus.InfoLevel:
+		return log.LevelInfo
+
+	case logrus.DebugLevel:
+		return log.LevelDebug
+
+	default:
+		return log.LevelInfo
+	}
+}

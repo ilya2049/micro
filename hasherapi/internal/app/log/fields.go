@@ -3,6 +3,7 @@ package log
 const (
 	FieldRequestID  = "request_id"
 	FieldHTTPQuery  = "query"
+	FieldHTTPBody   = "body"
 	FieldHTTPStatus = "status"
 	FieldHTTPMethod = "method"
 	FieldAddress    = "address"
