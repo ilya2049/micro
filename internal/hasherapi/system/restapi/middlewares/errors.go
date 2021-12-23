@@ -8,21 +8,21 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 )
 
-func NewResponderFactory(logger log.Logger) *ResponserFactory {
-	return &ResponserFactory{
+func NewResponderFactory(logger log.Logger) *ResponderFactory {
+	return &ResponderFactory{
 		logger: logger,
 	}
 }
 
-type ResponserFactory struct {
+type ResponderFactory struct {
 	logger log.Logger
 }
 
-func (f *ResponserFactory) NewInternalErrorResponder(responder middleware.Responder, err error) middleware.Responder {
+func (f *ResponderFactory) NewInternalErrorResponder(responder middleware.Responder, err error) middleware.Responder {
 	return newResponder(responder, err, f.logger, http.StatusInternalServerError)
 }
 
-func (f *ResponserFactory) NewBadRequestErrorResponder(responder middleware.Responder, err error) middleware.Responder {
+func (f *ResponderFactory) NewBadRequestErrorResponder(responder middleware.Responder, err error) middleware.Responder {
 	return newResponder(responder, err, f.logger, http.StatusBadRequest)
 }
 

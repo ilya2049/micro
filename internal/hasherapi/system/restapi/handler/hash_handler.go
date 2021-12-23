@@ -11,7 +11,7 @@ import (
 
 func newHashHandler(
 	hashService *hash.Service,
-	errorResponderFactory *middlewares.ResponserFactory,
+	errorResponderFactory *middlewares.ResponderFactory,
 ) *hashHandler {
 	return &hashHandler{
 		hashService:           hashService,
@@ -22,7 +22,7 @@ func newHashHandler(
 type hashHandler struct {
 	hashService *hash.Service
 
-	errorResponderFactory *middlewares.ResponserFactory
+	errorResponderFactory *middlewares.ResponderFactory
 }
 
 func (h *Handler) GetCheck(params operations.GetCheckParams) middleware.Responder {
