@@ -58,6 +58,8 @@ func TestHashCalculator_Calculate(t *testing.T) {
 		tt := tt
 
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
 			sha3Hashes, _ := calculator.Calculate(context.Background(), tt.args.inputs)
 			assert.Equal(t, tt.want, sha3Hashes)
 		})
