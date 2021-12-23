@@ -11,11 +11,11 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"hasherapi/internal/system/restapi/handler"
-	"hasherapi/internal/system/restapi/operations"
+	"hasherapi/system/restapi/handler"
+	"hasherapi/system/restapi/operations"
 )
 
-//go:generate swagger generate server --target ../../../../hasherapi --name Hasherapi --spec ../../../../api/rest-api.yml --model-package internal/system/restapi/models --server-package internal/system/restapi --implementation-package hasherapi/internal/system/restapi/handler --principal interface{}
+//go:generate swagger generate server --target ../../../hasherapi --name Hasherapi --spec ../../../api/rest-api.yml --model-package system/restapi/models --server-package system/restapi --implementation-package hasherapi/system/restapi/handler --principal interface{}
 
 // This file auto configures the api backend implementation.
 // handler package must already exist.

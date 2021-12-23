@@ -2,14 +2,14 @@ package handler
 
 import (
 	"crypto/tls"
-	apphash "hasherapi/internal/app/hash"
-	"hasherapi/internal/app/log"
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/system/hash/fakecalculator"
-	"hasherapi/internal/system/hash/fakestorage"
-	"hasherapi/internal/system/logger"
-	"hasherapi/internal/system/restapi/middlewares"
-	"hasherapi/internal/system/restapi/operations"
+	apphash "hasherapi/app/hash"
+	"hasherapi/app/log"
+	"hasherapi/domain/hash"
+	"hasherapi/system/hash/fakecalculator"
+	"hasherapi/system/hash/fakestorage"
+	"hasherapi/system/logger"
+	"hasherapi/system/restapi/middlewares"
+	"hasherapi/system/restapi/operations"
 	"net/http"
 )
 

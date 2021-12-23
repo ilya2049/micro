@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"context"
-	"hasherapi/internal/pkg/httputil/requestid"
+	"hasherapi/pkg/httputil/requestid"
 	"net/http"
 )
 

@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/pkg/conv"
-	"hasherapi/internal/system/restapi/models"
-	"hasherapi/internal/system/restapi/operations"
+	"hasherapi/domain/hash"
+	"hasherapi/pkg/conv"
+	"hasherapi/system/restapi/models"
+	"hasherapi/system/restapi/operations"
 )
 
 func postSendParamsToHashInputs(params operations.PostSendParams) []hash.Input {

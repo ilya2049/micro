@@ -2,7 +2,7 @@ package fakecalculator
 
 import (
 	"context"
-	"hasherapi/internal/domain/hash"
+	"hasherapi/domain/hash"
 )
 
 func New() *HashCalculator {

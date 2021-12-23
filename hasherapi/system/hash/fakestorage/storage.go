@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"hasherapi/internal/domain/hash"
+	"hasherapi/domain/hash"
 )
 
 func New() *HashStorage {

@@ -2,9 +2,9 @@ package handler
 
 import (
 	"fmt"
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/system/restapi/middlewares"
-	"hasherapi/internal/system/restapi/operations"
+	"hasherapi/domain/hash"
+	"hasherapi/system/restapi/middlewares"
+	"hasherapi/system/restapi/operations"
 
 	"github.com/go-openapi/runtime/middleware"
 )

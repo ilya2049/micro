@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"hasherapi/internal/app/log"
+	"hasherapi/app/log"
 	"net/http"
 
 	"github.com/go-openapi/runtime"

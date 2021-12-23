@@ -3,7 +3,7 @@ swagger generate server \
 --target=hasherapi \
 --spec=api/rest-api.yml \
 --main-package=hasherapi \
---server-package=internal/system/restapi \
---model-package=internal/system/restapi/models \
---implementation-package=hasherapi/internal/system/restapi/handler \
+--server-package=system/restapi \
+--model-package=system/restapi/models \
+--implementation-package=hasherapi/system/restapi/handler \
 --name="hasherapi"

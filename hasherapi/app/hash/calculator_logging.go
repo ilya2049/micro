@@ -2,9 +2,9 @@ package hash
 
 import (
 	"context"
-	"hasherapi/internal/app/log"
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/pkg/httputil/requestid"
+	"hasherapi/app/log"
+	"hasherapi/domain/hash"
+	"hasherapi/pkg/httputil/requestid"
 )
 
 func WrapCalculatorWithLogger(calculator hash.Calculator, logger log.Logger) hash.Calculator {

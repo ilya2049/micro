@@ -2,8 +2,8 @@ package fakecalculator_test
 
 import (
 	"context"
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/system/hash/fakecalculator"
+	"hasherapi/domain/hash"
+	"hasherapi/system/hash/fakecalculator"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

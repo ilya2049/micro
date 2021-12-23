@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"hasherapi/internal/app/log"
+	"hasherapi/app/log"
 
 	"github.com/sirupsen/logrus"
 )

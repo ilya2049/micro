@@ -14,7 +14,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/validate"
 
-	"hasherapi/internal/system/restapi/models"
+	"hasherapi/system/restapi/models"
 )
 
 // NewPostSendParams creates a new PostSendParams object

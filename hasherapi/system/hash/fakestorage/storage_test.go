@@ -2,8 +2,8 @@ package fakestorage_test
 
 import (
 	"context"
-	"hasherapi/internal/domain/hash"
-	"hasherapi/internal/system/hash/fakestorage"
+	"hasherapi/domain/hash"
+	"hasherapi/system/hash/fakestorage"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
