@@ -2,10 +2,12 @@ package main
 
 import (
 	"common/hasherproto"
+	"common/log/logrus"
 	"fmt"
 	"hasher/system/grpcapi"
 	"net"
 
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 )
 
@@ -16,12 +18,17 @@ func main() {
 		panic(err)
 	}
 
-	s := grpc.NewServer()
+	aLogger := logrus.NewLogger()
 
-	server := grpcapi.NewServer()
-	hasherproto.RegisterHasherServiceServer(s, server)
+	grpcServer := grpc.NewServer(grpc_middleware.WithUnaryServerChain(
+		grpcapi.InterceptorTraceRequest(aLogger),
+		grpcapi.InterceptorLogRequest(aLogger),
+	))
 
-	if err := s.Serve(listener); err != nil {
+	grpcAPIServer := grpcapi.NewServer(aLogger)
+	hasherproto.RegisterHasherServiceServer(grpcServer, grpcAPIServer)
+
+	if err := grpcServer.Serve(listener); err != nil {
 		panic(err)
 	}
 }

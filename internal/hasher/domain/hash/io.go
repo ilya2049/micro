@@ -1,5 +1,7 @@
 package hash
 
+import "fmt"
+
 func NewInputs(strings []string) []Input {
 	inputs := make([]Input, 0, len(strings))
 
@@ -22,6 +24,10 @@ type Input struct {
 	value []byte
 }
 
+func (in Input) String() string {
+	return fmt.Sprintf("{id: %d, value: %s}", in.id, in.value)
+}
+
 func (in Input) NewSHA3(value string) SHA3 {
 	return NewSHA3(in.id, value)
 }
@@ -36,6 +42,10 @@ func NewSHA3(id int, value string) SHA3 {
 type SHA3 struct {
 	id    int
 	value string
+}
+
+func (sha3 SHA3) String() string {
+	return fmt.Sprintf("{id: %d, value: %s}", sha3.id, sha3.value)
 }
 
 type SHA3Hashes []SHA3

@@ -17,10 +17,16 @@ func Set(ctx context.Context, requestID string) context.Context {
 }
 
 func New(ctx context.Context) context.Context {
+	ctx, _ = NewGet(ctx)
+
+	return ctx
+}
+
+func NewGet(ctx context.Context) (context.Context, string) {
 	uuid := guid.Must(guid.NewV4(), nil)
 	requestID := uuid.String()
 
-	return Set(ctx, requestID)
+	return Set(ctx, requestID), requestID
 }
 
 func Get(ctx context.Context) string {
