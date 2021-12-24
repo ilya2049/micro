@@ -5,18 +5,22 @@ import (
 	apphash "hasherapi/app/hash"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
-	"hasherapi/system/hash/fakecalculator"
+	"hasherapi/system/hash/calculator"
 	"hasherapi/system/hash/fakestorage"
 	"hasherapi/system/logger"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
 	"net/http"
+	"time"
 )
 
 func New() *Handler {
 	aLogger := logger.New()
 
-	hashCalculator := apphash.WrapCalculatorWithLogger(fakecalculator.New(), aLogger)
+	var hashCalculator hash.Calculator
+	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)
+	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, aLogger)
+
 	hashStorage := apphash.WrapStorageWithLogger(fakestorage.New(), aLogger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 

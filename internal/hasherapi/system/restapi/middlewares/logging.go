@@ -36,7 +36,7 @@ func Logging(next http.Handler, logger log.Logger) http.Handler {
 
 		next.ServeHTTP(statusRecorder, r)
 
-		logger.LogInfo(path, log.Details{
+		logger.LogDebug(path, log.Details{
 			log.FieldRequestID:  requestID,
 			log.FieldHTTPBody:   string(bodyBytes),
 			log.FieldHTTPQuery:  query,
