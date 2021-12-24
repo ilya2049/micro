@@ -15,3 +15,6 @@ go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
 
 # GRPC UI
 go install github.com/fullstorydev/grpcui/cmd/grpcui@v1.2.0
+
+# Unit test browser goconvey
+go install github.com/smartystreets/goconvey@v1.7.2
