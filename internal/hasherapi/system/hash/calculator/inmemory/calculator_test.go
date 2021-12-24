@@ -1,9 +1,9 @@
-package fakecalculator_test
+package inmemory_test
 
 import (
 	"context"
 	"hasherapi/domain/hash"
-	"hasherapi/system/hash/fakecalculator"
+	"hasherapi/system/hash/calculator/inmemory"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -52,7 +52,7 @@ func TestHashCalculator_Calculate(t *testing.T) {
 		},
 	}
 
-	calculator := fakecalculator.New()
+	calculator := inmemory.NewHashCalculator()
 
 	for _, tt := range tests {
 		tt := tt

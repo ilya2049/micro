@@ -1,9 +1,9 @@
-package fakestorage_test
+package inmemory_test
 
 import (
 	"context"
 	"hasherapi/domain/hash"
-	"hasherapi/system/hash/fakestorage"
+	"hasherapi/system/hash/storage/inmemory"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,7 +11,7 @@ import (
 )
 
 func TestHashStorage_Save(t *testing.T) {
-	storage := fakestorage.New()
+	storage := inmemory.NewHashStorage()
 
 	sha3Hashes := hash.NewSHA3Hashes([]string{
 		"hash-of-1",

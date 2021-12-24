@@ -1,11 +1,11 @@
-package fakecalculator
+package inmemory
 
 import (
 	"context"
 	"hasherapi/domain/hash"
 )
 
-func New() *HashCalculator {
+func NewHashCalculator() *HashCalculator {
 	return &HashCalculator{}
 }
 

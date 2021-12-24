@@ -6,7 +6,7 @@ import (
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 	"hasherapi/system/hash/calculator"
-	"hasherapi/system/hash/fakestorage"
+	inmemoryStorage "hasherapi/system/hash/storage/inmemory"
 	"hasherapi/system/logger"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
@@ -21,7 +21,7 @@ func New() *Handler {
 	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)
 	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, aLogger)
 
-	hashStorage := apphash.WrapStorageWithLogger(fakestorage.New(), aLogger)
+	hashStorage := apphash.WrapStorageWithLogger(inmemoryStorage.NewHashStorage(), aLogger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
 	errorResponderFactory := middlewares.NewResponderFactory(aLogger)

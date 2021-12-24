@@ -1,4 +1,4 @@
-package fakestorage
+package inmemory
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"hasherapi/domain/hash"
 )
 
-func New() *HashStorage {
+func NewHashStorage() *HashStorage {
 	return &HashStorage{}
 }
 
