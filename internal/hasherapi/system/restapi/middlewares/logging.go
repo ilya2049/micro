@@ -1,9 +1,9 @@
 package middlewares
 
 import (
+	"common/requestid"
 	"hasherapi/app/log"
 	"hasherapi/pkg/httputil"
-	"hasherapi/pkg/httputil/requestid"
 	"net/http"
 	"time"
 )

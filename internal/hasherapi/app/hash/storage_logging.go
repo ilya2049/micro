@@ -1,10 +1,10 @@
 package hash
 
 import (
+	"common/requestid"
 	"context"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
-	"hasherapi/pkg/httputil/requestid"
 )
 
 func WrapStorageWithLogger(storage hash.Storage, logger log.Logger) hash.Storage {

@@ -1,8 +1,8 @@
 package middlewares
 
 import (
+	"common/requestid"
 	"context"
-	"hasherapi/pkg/httputil/requestid"
 	"net/http"
 )
 

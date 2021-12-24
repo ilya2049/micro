@@ -1,10 +1,10 @@
 package hash
 
 import (
+	"common/requestid"
 	"context"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
-	"hasherapi/pkg/httputil/requestid"
 )
 
 func WrapCalculatorWithLogger(calculator hash.Calculator, logger log.Logger) hash.Calculator {

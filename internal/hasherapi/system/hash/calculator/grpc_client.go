@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
+	"common/requestid"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 	"hasherapi/pkg/grpcutil"
-	"hasherapi/pkg/httputil/requestid"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
