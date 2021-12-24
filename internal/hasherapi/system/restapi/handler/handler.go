@@ -1,13 +1,13 @@
 package handler
 
 import (
+	commonLog "common/log/logrus"
 	"crypto/tls"
 	apphash "hasherapi/app/hash"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 	"hasherapi/system/hash/calculator"
 	inmemoryStorage "hasherapi/system/hash/storage/inmemory"
-	"hasherapi/system/logger"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
 	"net/http"
@@ -15,7 +15,7 @@ import (
 )
 
 func New() *Handler {
-	aLogger := logger.New()
+	aLogger := commonLog.NewLogger()
 
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)

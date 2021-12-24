@@ -1,18 +1,17 @@
 package log
 
+import (
+	"common/log"
+)
+
 type Logger interface {
-	LogInfo(message string, details Details)
-	LogError(message string, details Details)
-	LogWarn(message string, details Details)
-	LogDebug(message string, details Details)
-
-	Level() Level
-
-	Printf(message string, details ...interface{})
+	log.Logger
+	log.LevelProvider
+	log.Printer
 }
 
-type Details map[string]interface{}
+type Details = log.Details
 
-func NoDetails() Details {
-	return nil
-}
+const (
+	LevelDebug = log.LevelDebug
+)

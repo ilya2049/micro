@@ -1,12 +1,12 @@
-package logger
+package logrus
 
 import (
-	"hasherapi/app/log"
+	"common/log"
 
 	"github.com/sirupsen/logrus"
 )
 
-func New() *Logger {
+func NewLogger() *Logger {
 	logrusLogger := logrus.New()
 
 	logrusLogger.SetLevel(logrus.DebugLevel)
