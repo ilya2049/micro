@@ -1,12 +1,13 @@
 package hash
 
 import (
+	"encoding/hex"
 	"sync"
 
 	"golang.org/x/crypto/sha3"
 )
 
-func CalculateSHA3HashSum(inputs []Input) SHA3Outputs {
+func CalculateSHA3HashSum(inputs []Input) SHA3Hashes {
 	if len(inputs) == 0 {
 		return []SHA3{}
 	}
@@ -24,10 +25,10 @@ func calculateSHA3HashSum256(input Input) SHA3 {
 
 	hashBytes := hash.Sum(nil)
 
-	return input.NewSHA3(hashBytes)
+	return input.NewSHA3(hex.EncodeToString(hashBytes))
 }
 
-func calculateSHA3HashSumParallel(inputs []Input) SHA3Outputs {
+func calculateSHA3HashSumParallel(inputs []Input) SHA3Hashes {
 	var wg sync.WaitGroup
 	sha3HashesChan := make(chan SHA3, len(inputs))
 
@@ -46,7 +47,7 @@ func calculateSHA3HashSumParallel(inputs []Input) SHA3Outputs {
 	wg.Wait()
 	close(sha3HashesChan)
 
-	sha3Hashes := make(SHA3Outputs, 0, len(inputs))
+	sha3Hashes := make(SHA3Hashes, 0, len(inputs))
 	for sha3Hash := range sha3HashesChan {
 		sha3Hashes = append(sha3Hashes, sha3Hash)
 	}

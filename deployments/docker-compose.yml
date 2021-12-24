@@ -6,4 +6,11 @@ services:
       context: ../
       dockerfile: build/hasherapi/Dockerfile
     ports:
-      - "8080:8080"
+      - "8088:8088"
+
+  hasher:
+    build:
+      context: ../
+      dockerfile: build/hasher/Dockerfile
+    ports:
+      - "8090:8090"

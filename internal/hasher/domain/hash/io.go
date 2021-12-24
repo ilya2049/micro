@@ -22,11 +22,11 @@ type Input struct {
 	value []byte
 }
 
-func (in Input) NewSHA3(value []byte) SHA3 {
+func (in Input) NewSHA3(value string) SHA3 {
 	return NewSHA3(in.id, value)
 }
 
-func NewSHA3(id int, value []byte) SHA3 {
+func NewSHA3(id int, value string) SHA3 {
 	return SHA3{
 		id:    id,
 		value: string(value),
@@ -38,9 +38,9 @@ type SHA3 struct {
 	value string
 }
 
-type SHA3Outputs []SHA3
+type SHA3Hashes []SHA3
 
-func (outputs SHA3Outputs) ToStrings() []string {
+func (outputs SHA3Hashes) ToStrings() []string {
 	chunks := make([]string, len(outputs))
 
 	for _, output := range outputs {

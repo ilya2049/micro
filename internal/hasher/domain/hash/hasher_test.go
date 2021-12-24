@@ -2,7 +2,6 @@ package hash_test
 
 import (
 	"hasher/domain/hash"
-	"hasher/pkg/hexutil"
 
 	"testing"
 
@@ -16,14 +15,14 @@ func TestCalculateSHA3HashSum(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want hash.SHA3Outputs
+		want hash.SHA3Hashes
 	}{
 		{
 			name: "No inputs. Expected an empty output collection.",
 			args: args{
 				inputs: []hash.Input{},
 			},
-			want: hash.SHA3Outputs{},
+			want: hash.SHA3Hashes{},
 		},
 		{
 			name: "One input. Expected one sha3 hash in the output collection.",
@@ -32,8 +31,8 @@ func TestCalculateSHA3HashSum(t *testing.T) {
 					hash.NewInput(0, "1"),
 				},
 			},
-			want: hash.SHA3Outputs{
-				hash.NewSHA3(0, hexutil.MustDecodeString("67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2")),
+			want: hash.SHA3Hashes{
+				hash.NewSHA3(0, "67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2"),
 			},
 		},
 		{
@@ -44,9 +43,9 @@ func TestCalculateSHA3HashSum(t *testing.T) {
 					hash.NewInput(1, "2"),
 				},
 			},
-			want: hash.SHA3Outputs{
-				hash.NewSHA3(0, hexutil.MustDecodeString("67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2")),
-				hash.NewSHA3(1, hexutil.MustDecodeString("b1b1bd1ed240b1496c81ccf19ceccf2af6fd24fac10ae42023628abbe2687310")),
+			want: hash.SHA3Hashes{
+				hash.NewSHA3(0, "67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2"),
+				hash.NewSHA3(1, "b1b1bd1ed240b1496c81ccf19ceccf2af6fd24fac10ae42023628abbe2687310"),
 			},
 		},
 		{
@@ -58,10 +57,10 @@ func TestCalculateSHA3HashSum(t *testing.T) {
 					hash.NewInput(2, "3"),
 				},
 			},
-			want: hash.SHA3Outputs{
-				hash.NewSHA3(0, hexutil.MustDecodeString("67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2")),
-				hash.NewSHA3(1, hexutil.MustDecodeString("b1b1bd1ed240b1496c81ccf19ceccf2af6fd24fac10ae42023628abbe2687310")),
-				hash.NewSHA3(2, hexutil.MustDecodeString("1bf0b26eb2090599dd68cbb42c86a674cb07ab7adc103ad3ccdf521bb79056b9")),
+			want: hash.SHA3Hashes{
+				hash.NewSHA3(0, "67b176705b46206614219f47a05aee7ae6a3edbe850bbbe214c536b989aea4d2"),
+				hash.NewSHA3(1, "b1b1bd1ed240b1496c81ccf19ceccf2af6fd24fac10ae42023628abbe2687310"),
+				hash.NewSHA3(2, "1bf0b26eb2090599dd68cbb42c86a674cb07ab7adc103ad3ccdf521bb79056b9"),
 			},
 		},
 	}

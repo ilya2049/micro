@@ -1,0 +1,14 @@
+syntax = "proto3";
+option go_package=".;hasherproto";
+
+service HasherService {
+    rpc CalculateSha3Hashes (Inputs) returns (Sha3Hashes) {}
+}
+
+message Inputs {
+    repeated string inputs = 1;
+}
+
+message Sha3Hashes {
+    repeated string hashes = 1; 
+} 
