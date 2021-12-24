@@ -26,19 +26,19 @@ type hashHandler struct {
 }
 
 func (h *Handler) GetCheck(params operations.GetCheckParams) middleware.Responder {
+	ctx := params.HTTPRequest.Context()
+
 	hashIDs, err := hash.NewIDsFromStrings(params.Ids)
 	if err != nil {
 		return h.errorResponderFactory.NewBadRequestErrorResponder(
-			operations.NewGetCheckBadRequest(), fmt.Errorf("failed to parse hash ids: %w", err),
+			ctx, operations.NewGetCheckBadRequest(), fmt.Errorf("failed to parse hash ids: %w", err),
 		)
 	}
-
-	ctx := params.HTTPRequest.Context()
 
 	identifiedHashes, err := h.hashService.FindHashes(ctx, hashIDs)
 	if err != nil {
 		return h.errorResponderFactory.NewInternalErrorResponder(
-			operations.NewGetCheckInternalServerError(), err,
+			ctx, operations.NewGetCheckInternalServerError(), err,
 		)
 	}
 
@@ -57,7 +57,7 @@ func (h *Handler) PostSend(params operations.PostSendParams) middleware.Responde
 	identifiedHashes, err := h.hashService.CreateHashes(ctx, hashInputs)
 	if err != nil {
 		return h.errorResponderFactory.NewInternalErrorResponder(
-			operations.NewPostSendInternalServerError(), err,
+			ctx, operations.NewPostSendInternalServerError(), err,
 		)
 	}
 

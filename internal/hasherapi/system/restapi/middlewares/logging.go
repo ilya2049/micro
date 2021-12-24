@@ -23,8 +23,9 @@ func Logging(next http.Handler, logger log.Logger) http.Handler {
 
 		bodyBytes, err := httputil.ScanBody(r)
 		if err != nil {
-			logger.LogWarn("loggingMiddleware: failed to scan body bytes", log.Details{
+			logger.LogWarn("failed to scan body bytes", log.Details{
 				log.FieldRequestID:  requestID,
+				log.FieldComponent:  log.ComponentHTTPLogger,
 				log.FieldHTTPQuery:  query,
 				log.FieldHTTPMethod: r.Method,
 				log.FieldAddress:    r.RemoteAddr,
@@ -38,6 +39,7 @@ func Logging(next http.Handler, logger log.Logger) http.Handler {
 
 		logger.LogDebug(path, log.Details{
 			log.FieldRequestID:  requestID,
+			log.FieldComponent:  log.ComponentHTTPAPI,
 			log.FieldHTTPBody:   string(bodyBytes),
 			log.FieldHTTPQuery:  query,
 			log.FieldHTTPStatus: statusRecorder.Status(),

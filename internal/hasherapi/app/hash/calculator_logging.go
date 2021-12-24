@@ -20,24 +20,17 @@ type calculatorLoggingWrapper struct {
 	logger log.Logger
 }
 
-const messageHashCalculatorCalculate = "hashCalculator.Calculate"
-
 func (c *calculatorLoggingWrapper) Calculate(ctx context.Context, inputs []hash.Input) (hash.SHA3Hashes, error) {
-	requestID := requestid.Get(ctx)
-
-	c.logger.LogDebug(messageHashCalculatorCalculate, log.Details{
-		log.FieldRequestID:  requestID,
-		log.FieldHashInputs: inputs,
-	})
-
 	sha3Hashes, err := c.next.Calculate(ctx, inputs)
 
-	if err == nil {
-		c.logger.LogDebug(messageHashCalculatorCalculate, log.Details{
-			log.FieldRequestID:      requestID,
-			log.FieldHashSHA3Hashes: sha3Hashes,
-		})
-	}
+	requestID := requestid.Get(ctx)
+
+	c.logger.LogDebug("calculate", log.Details{
+		log.FieldRequestID:      requestID,
+		log.FieldHashInputs:     inputs,
+		log.FieldComponent:      log.ComponentHashCalculator,
+		log.FieldHashSHA3Hashes: sha3Hashes,
+	})
 
 	return sha3Hashes, err
 }

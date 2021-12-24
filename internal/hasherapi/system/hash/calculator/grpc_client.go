@@ -50,9 +50,9 @@ func (c *GRPCCalculator) openConnection(ctx context.Context) (*grpcutil.Connecti
 	return grpcutil.NewConnection(ctx, clientConnection,
 			func() {
 				if err := clientConnection.Close(); err != nil {
-					c.logger.LogWarn(systemMessageComponent+": failed to close an grpc connection", log.Details{
-						log.FieldError:     err.Error(),
+					c.logger.LogWarn("failed to close an grpc connection: "+err.Error(), log.Details{
 						log.FieldRequestID: requestID,
+						log.FieldComponent: log.ComponentHashCalculator,
 					})
 				}
 
@@ -65,7 +65,7 @@ func (c *GRPCCalculator) Calculate(ctx context.Context, hashInputs []hash.Input)
 	connection, err := c.openConnection(ctx)
 	if err != nil {
 		return []hash.SHA3Hash{}, fmt.Errorf(
-			"%s: failed to open a grpc connection: %w", systemMessageComponent, err,
+			"%s: failed to open a grpc connection: %w", log.ComponentHashCalculator, err,
 		)
 	}
 
@@ -79,7 +79,7 @@ func (c *GRPCCalculator) Calculate(ctx context.Context, hashInputs []hash.Input)
 	)
 	if err != nil {
 		return hash.SHA3Hashes{}, fmt.Errorf(
-			"%s: failed to fetch sha3 hashes: %w", systemMessageComponent, err,
+			"%s: failed to fetch sha3 hashes: %w", log.ComponentHashCalculator, err,
 		)
 	}
 

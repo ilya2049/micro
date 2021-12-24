@@ -1,6 +1,8 @@
 package middlewares
 
 import (
+	"common/requestid"
+	"context"
 	"hasherapi/app/log"
 	"net/http"
 
@@ -18,25 +20,31 @@ type ResponderFactory struct {
 	logger log.Logger
 }
 
-func (f *ResponderFactory) NewInternalErrorResponder(responder middleware.Responder, err error) middleware.Responder {
-	return newResponder(responder, err, f.logger, http.StatusInternalServerError)
-}
-
-func (f *ResponderFactory) NewBadRequestErrorResponder(responder middleware.Responder, err error) middleware.Responder {
-	return newResponder(responder, err, f.logger, http.StatusBadRequest)
-}
-
-func newResponder(
+func (f *ResponderFactory) NewInternalErrorResponder(
+	ctx context.Context,
 	responder middleware.Responder,
 	err error,
-	logger log.Logger,
-	httpStatus int,
-) *Responder {
+) middleware.Responder {
 	return &Responder{
 		next:       responder,
 		err:        err,
-		logger:     logger,
-		httpStatus: httpStatus,
+		logger:     f.logger,
+		httpStatus: http.StatusInternalServerError,
+		ctx:        ctx,
+	}
+}
+
+func (f *ResponderFactory) NewBadRequestErrorResponder(
+	ctx context.Context,
+	responder middleware.Responder,
+	err error,
+) middleware.Responder {
+	return &Responder{
+		next:       responder,
+		err:        err,
+		logger:     f.logger,
+		httpStatus: http.StatusBadRequest,
+		ctx:        ctx,
 	}
 }
 
@@ -45,22 +53,25 @@ type Responder struct {
 
 	logger log.Logger
 
+	ctx        context.Context
 	err        error
 	httpStatus int
 }
 
-const errorMessage = "rest api error"
-
 func (r *Responder) WriteResponse(w http.ResponseWriter, p runtime.Producer) {
+	requestID := requestid.Get(r.ctx)
+
 	switch r.httpStatus {
 	case http.StatusBadRequest:
-		r.logger.LogWarn(errorMessage, log.Details{
-			log.FieldError: r.err.Error(),
+		r.logger.LogWarn(r.err.Error(), log.Details{
+			log.FieldComponent: log.ComponentHTTPAPI,
+			log.FieldRequestID: requestID,
 		})
 
 	default:
-		r.logger.LogError(errorMessage, log.Details{
-			log.FieldError: r.err.Error(),
+		r.logger.LogError(r.err.Error(), log.Details{
+			log.FieldComponent: log.ComponentHTTPAPI,
+			log.FieldRequestID: requestID,
 		})
 	}
 

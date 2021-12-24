@@ -9,7 +9,6 @@ const (
 	FieldAddress    = "address"
 	FieldUserAgent  = "ua"
 	FieldLatency    = "latency"
-	FieldError      = "error"
 )
 
 const (
@@ -17,4 +16,12 @@ const (
 	FieldHashSHA3Hashes           = "sha3_hashes"
 	FieldHashIdentifiedSHA3Hashes = "identified_sha3_hashes"
 	FieldHashIDs                  = "hash_ids"
+	FieldComponent                = "component"
+)
+
+const (
+	ComponentHashCalculator = "hash_calculator"
+	ComponentHashStorage    = "hash_storage"
+	ComponentHTTPAPI        = "http_api"
+	ComponentHTTPLogger     = "http_api_logger"
 )
