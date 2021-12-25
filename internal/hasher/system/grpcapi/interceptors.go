@@ -64,6 +64,14 @@ func InterceptorLogRequest(logger log.Logger) grpc.UnaryServerInterceptor {
 			log.FieldComponent: log.ComponentGRPCAPI,
 		})
 
-		return handler(ctx, req)
+		resp, err = handler(ctx, req)
+		if err != nil {
+			logger.LogError(err.Error(), log.Details{
+				log.FieldRequestID: requestID,
+				log.FieldComponent: log.ComponentGRPCAPI,
+			})
+		}
+
+		return resp, err
 	}
 }
