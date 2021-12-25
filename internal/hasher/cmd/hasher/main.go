@@ -16,6 +16,10 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	server = "grpc server"
+)
+
 func main() {
 	listener, err := net.Listen("tcp", ":8090")
 	if err != nil {
@@ -35,12 +39,12 @@ func main() {
 	grpcAPIServer := grpcapi.NewServer(aLogger)
 	hasherproto.RegisterHasherServiceServer(grpcServer, grpcAPIServer)
 
-	aLogger.LogInfo("grpc api server is ready to accept requests", log.NoDetails())
+	aLogger.LogInfo(server+" is ready to accept requests", log.NoDetails())
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				aLogger.LogError("grpc api server error: "+err.Error(), log.NoDetails())
+				aLogger.LogError(server+" error: "+err.Error(), log.NoDetails())
 			}
 		}
 	}()
@@ -52,5 +56,5 @@ func main() {
 
 	grpcServer.GracefulStop()
 
-	aLogger.LogInfo("grpc api server is shut down gracefully", log.NoDetails())
+	aLogger.LogInfo(server+" is shut down gracefully", log.NoDetails())
 }
