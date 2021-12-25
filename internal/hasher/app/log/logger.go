@@ -13,3 +13,7 @@ type Details = log.Details
 const (
 	LevelDebug = log.LevelDebug
 )
+
+func NoDetails() log.Details {
+	return nil
+}

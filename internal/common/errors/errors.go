@@ -1,6 +1,8 @@
 package errors
 
 import (
+	"errors"
+
 	"github.com/ansel1/merry/v2"
 )
 
@@ -22,4 +24,8 @@ func StackTrace(err error) ([]string, bool) {
 	}
 
 	return []string{}, false
+}
+
+func Is(err, target error) bool {
+	return errors.Is(err, target)
 }
