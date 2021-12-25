@@ -6,6 +6,10 @@ import (
 	guid "github.com/satori/go.uuid"
 )
 
+const (
+	Header = "X-Request-ID"
+)
+
 type key string
 
 const (

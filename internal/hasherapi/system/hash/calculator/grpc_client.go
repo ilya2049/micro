@@ -12,6 +12,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 
 	"common/hasherproto"
 )
@@ -46,6 +47,9 @@ func (c *GRPCCalculator) openConnection(ctx context.Context) (*grpcutil.Connecti
 	}
 
 	requestID := requestid.Get(ctx)
+	ctx = metadata.AppendToOutgoingContext(ctx,
+		requestid.Header, requestID,
+	)
 
 	return grpcutil.NewConnection(ctx, clientConnection,
 			func() {

@@ -33,7 +33,7 @@ func InterceptorTraceRequest(logger log.Logger) grpc.UnaryServerInterceptor {
 			return handler(ctx, req)
 		}
 
-		requestID := grpcutil.MetadataGetFirst("X-Request-ID", grpcMetadata)
+		requestID := grpcutil.MetadataGetFirst(requestid.Header, grpcMetadata)
 
 		if requestID == "" {
 			ctx, requestID = requestid.NewGet(ctx)
