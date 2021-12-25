@@ -17,6 +17,7 @@ const (
 	FieldHashIdentifiedSHA3Hashes = "identified_sha3_hashes"
 	FieldHashIDs                  = "hash_ids"
 	FieldComponent                = "component"
+	FieldStackTrace               = "stack_trace"
 )
 
 const (

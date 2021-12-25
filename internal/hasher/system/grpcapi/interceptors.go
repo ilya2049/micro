@@ -1,6 +1,7 @@
 package grpcapi
 
 import (
+	"common/errors"
 	"common/requestid"
 	"context"
 
@@ -59,17 +60,20 @@ func InterceptorLogRequest(logger log.Logger) grpc.UnaryServerInterceptor {
 	) (resp interface{}, err error) {
 		requestID := requestid.Get(ctx)
 
-		logger.LogDebug(info.FullMethod, log.Details{
+		logDetails := log.Details{
 			log.FieldRequestID: requestID,
 			log.FieldComponent: log.ComponentGRPCAPI,
-		})
+		}
+
+		logger.LogDebug(info.FullMethod, logDetails)
 
 		resp, err = handler(ctx, req)
 		if err != nil {
-			logger.LogError(err.Error(), log.Details{
-				log.FieldRequestID: requestID,
-				log.FieldComponent: log.ComponentGRPCAPI,
-			})
+			if stackTrace, ok := errors.StackTrace(err); ok {
+				logDetails[log.FieldStackTrace] = stackTrace
+			}
+
+			logger.LogError(err.Error(), logDetails)
 		}
 
 		return resp, err

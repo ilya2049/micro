@@ -1,8 +1,8 @@
 package calculator
 
 import (
+	"common/errors"
 	"context"
-	"fmt"
 	"time"
 
 	"common/requestid"
@@ -64,7 +64,7 @@ func (c *GRPCCalculator) openConnection(ctx context.Context) (*grpcutil.Connecti
 func (c *GRPCCalculator) Calculate(ctx context.Context, hashInputs []hash.Input) (hash.SHA3Hashes, error) {
 	connection, err := c.openConnection(ctx)
 	if err != nil {
-		return []hash.SHA3Hash{}, fmt.Errorf(
+		return []hash.SHA3Hash{}, errors.Errorf(
 			"%s: failed to open a grpc connection: %w", log.ComponentHashCalculator, err,
 		)
 	}
@@ -78,7 +78,7 @@ func (c *GRPCCalculator) Calculate(ctx context.Context, hashInputs []hash.Input)
 		hashInputsToProtoInputs(hashInputs),
 	)
 	if err != nil {
-		return hash.SHA3Hashes{}, fmt.Errorf(
+		return hash.SHA3Hashes{}, errors.Errorf(
 			"%s: failed to fetch sha3 hashes: %w", log.ComponentHashCalculator, err,
 		)
 	}

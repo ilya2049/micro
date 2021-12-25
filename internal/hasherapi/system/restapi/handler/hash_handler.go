@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"common/errors"
 	"hasherapi/domain/hash"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
@@ -31,7 +31,7 @@ func (h *Handler) GetCheck(params operations.GetCheckParams) middleware.Responde
 	hashIDs, err := hash.NewIDsFromStrings(params.Ids)
 	if err != nil {
 		return h.errorResponderFactory.NewBadRequestErrorResponder(
-			ctx, operations.NewGetCheckBadRequest(), fmt.Errorf("failed to parse hash ids: %w", err),
+			ctx, operations.NewGetCheckBadRequest(), errors.Errorf("failed to parse hash ids: %w", err),
 		)
 	}
 

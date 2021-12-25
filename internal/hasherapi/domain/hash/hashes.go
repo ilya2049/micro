@@ -1,7 +1,7 @@
 package hash
 
 import (
-	"errors"
+	"common/errors"
 	"fmt"
 	"strconv"
 )
@@ -52,7 +52,7 @@ var errIDMustBeInt = errors.New("hash id must be an integer value")
 func newIDFromString(s string) (ID, error) {
 	id, err := strconv.Atoi(s)
 	if err != nil {
-		return 0, fmt.Errorf("%w: %s", errIDMustBeInt, s)
+		return 0, errors.Errorf("%w: %s", errIDMustBeInt, s)
 	}
 
 	return ID(id), nil

@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"common/errors"
 	"common/requestid"
 	"context"
 	"hasherapi/app/log"
@@ -61,18 +62,22 @@ type Responder struct {
 func (r *Responder) WriteResponse(w http.ResponseWriter, p runtime.Producer) {
 	requestID := requestid.Get(r.ctx)
 
+	errorMessage := r.err.Error()
+	logDetails := log.Details{
+		log.FieldComponent: log.ComponentHTTPAPI,
+		log.FieldRequestID: requestID,
+	}
+
+	if stackTrace, ok := errors.StackTrace(r.err); ok {
+		logDetails[log.FieldStackTrace] = stackTrace
+	}
+
 	switch r.httpStatus {
 	case http.StatusBadRequest:
-		r.logger.LogWarn(r.err.Error(), log.Details{
-			log.FieldComponent: log.ComponentHTTPAPI,
-			log.FieldRequestID: requestID,
-		})
+		r.logger.LogWarn(errorMessage, logDetails)
 
 	default:
-		r.logger.LogError(r.err.Error(), log.Details{
-			log.FieldComponent: log.ComponentHTTPAPI,
-			log.FieldRequestID: requestID,
-		})
+		r.logger.LogError(errorMessage, logDetails)
 	}
 
 	r.next.WriteResponse(w, p)
