@@ -65,12 +65,16 @@ func InterceptorLogRequest(logger log.Logger) grpc.UnaryServerInterceptor {
 			log.FieldComponent: log.ComponentGRPCAPI,
 		}
 
+		if grpcMetadata, ok := metadata.FromIncomingContext(ctx); ok {
+			logDetails[log.FieldGRPCMetadata] = grpcMetadata
+		}
+
 		logger.LogDebug(info.FullMethod, logDetails)
 
 		resp, err = handler(ctx, req)
 		if err != nil {
-			if stackTrace, ok := errors.StackTrace(err); ok {
-				logDetails[log.FieldStackTrace] = stackTrace
+			if stacktrace, ok := errors.StackTrace(err); ok {
+				logDetails[log.FieldStackTrace] = stacktrace
 			}
 
 			logger.LogError(err.Error(), logDetails)

@@ -1,9 +1,10 @@
 package log
 
 const (
-	FieldRequestID  = "request_id"
-	FieldComponent  = "component"
-	FieldStackTrace = "stack_trace"
+	FieldRequestID    = "request_id"
+	FieldGRPCMetadata = "metadata"
+	FieldComponent    = "component"
+	FieldStackTrace   = "stack_trace"
 )
 
 const (
