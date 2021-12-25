@@ -13,7 +13,10 @@ require (
 require (
 	github.com/ansel1/merry/v2 v2.0.0-beta.12 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/fabienm/go-logrus-formatters v1.0.0 // indirect
+	github.com/gemnasium/logrus-graylog-hook v2.0.7+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/satori/go.uuid v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.8.1 // indirect

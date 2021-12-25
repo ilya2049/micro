@@ -14,3 +14,32 @@ services:
       dockerfile: build/hasher/Dockerfile
     ports:
       - "8090:8090"
+
+  graylog:
+    image: graylog/graylog:3.3
+    environment:
+      - GRAYLOG_HTTP_EXTERNAL_URI=http://127.0.0.1:9000/
+    depends_on:
+      - mongo
+      - elasticsearch
+    ports:
+      - 9000:9000
+
+  mongo:
+    image: mongo:3
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.10
+    environment:
+      - http.host=0.0.0.0
+      - transport.host=localhost
+      - network.host=0.0.0.0
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    deploy:
+      resources:
+        limits:
+          memory: 1g

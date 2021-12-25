@@ -3,13 +3,26 @@ package logrus
 import (
 	"common/log"
 
+	formatter "github.com/fabienm/go-logrus-formatters"
+	graylog "github.com/gemnasium/logrus-graylog-hook"
 	"github.com/sirupsen/logrus"
 )
 
-func NewLogger() *Logger {
+type Config struct {
+	GraylogHost string
+	ServiceHost string
+}
+
+func NewLogger(cfg Config) *Logger {
 	logrusLogger := logrus.New()
 
+	gelfFormatter := formatter.NewGelf(cfg.ServiceHost)
+
+	logrusLogger.SetFormatter(gelfFormatter)
 	logrusLogger.SetLevel(logrus.DebugLevel)
+
+	graylogHook := graylog.NewGraylogHook(cfg.GraylogHost, map[string]interface{}{})
+	logrusLogger.AddHook(graylogHook)
 
 	return &Logger{
 		logrusLogger: logrusLogger,

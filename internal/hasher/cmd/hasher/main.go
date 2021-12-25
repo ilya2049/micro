@@ -18,7 +18,10 @@ func main() {
 		panic(err)
 	}
 
-	aLogger := logrus.NewLogger()
+	aLogger := logrus.NewLogger(logrus.Config{
+		GraylogHost: "graylog:12201",
+		ServiceHost: "hasher",
+	})
 
 	grpcServer := grpc.NewServer(grpc_middleware.WithUnaryServerChain(
 		grpcapi.InterceptorTraceRequest(aLogger),

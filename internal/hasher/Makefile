@@ -1,3 +1,3 @@
 .PHONY: test-browser
 test-browser:
-	@goconvey -port=9001
+	@goconvey -port=9051

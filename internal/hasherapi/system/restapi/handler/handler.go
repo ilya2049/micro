@@ -1,7 +1,7 @@
 package handler
 
 import (
-	commonLog "common/log/logrus"
+	"common/log/logrus"
 	"crypto/tls"
 	apphash "hasherapi/app/hash"
 	"hasherapi/app/log"
@@ -15,7 +15,10 @@ import (
 )
 
 func New() *Handler {
-	aLogger := commonLog.NewLogger()
+	aLogger := logrus.NewLogger(logrus.Config{
+		GraylogHost: "graylog:12201",
+		ServiceHost: "hasherapi",
+	})
 
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)
