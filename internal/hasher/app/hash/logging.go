@@ -3,6 +3,7 @@ package hash
 import (
 	"common/requestid"
 	"context"
+	"fmt"
 	"hasher/app/log"
 	"hasher/domain/hash"
 )
@@ -16,8 +17,8 @@ func CalculateSHA3HashSum(ctx context.Context, logger log.Logger) func([]hash.In
 		logger.LogDebug("calculate_sha3_hash_sum", log.Details{
 			log.FieldComponent:      log.ComponentHasher,
 			log.FieldRequestID:      requestID,
-			log.FieldHashInputs:     inputs,
-			log.FieldHashSHA3Hashes: sha3Hashes,
+			log.FieldHashInputs:     fmt.Sprint(inputs),
+			log.FieldHashSHA3Hashes: fmt.Sprint(sha3Hashes),
 		})
 
 		return sha3Hashes
