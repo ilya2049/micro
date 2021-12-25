@@ -50,5 +50,7 @@ func main() {
 
 	<-quit
 
+	grpcServer.GracefulStop()
+
 	aLogger.LogInfo("grpc api server is shut down gracefully", log.NoDetails())
 }
