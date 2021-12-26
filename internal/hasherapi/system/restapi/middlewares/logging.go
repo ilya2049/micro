@@ -25,7 +25,7 @@ func Logging(next http.Handler, logger log.Logger) http.Handler {
 		if err != nil {
 			logger.LogWarn("failed to scan body bytes", log.Details{
 				log.FieldRequestID:  requestID,
-				log.FieldComponent:  log.ComponentHTTPLogger,
+				log.FieldComponent:  log.ComponentHTTPAPI,
 				log.FieldHTTPQuery:  query,
 				log.FieldHTTPMethod: r.Method,
 				log.FieldAddress:    r.RemoteAddr,

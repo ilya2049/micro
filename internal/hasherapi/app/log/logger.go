@@ -12,6 +12,10 @@ type Logger interface {
 
 type Details = log.Details
 
+func NoDetails() Details {
+	return nil
+}
+
 const (
 	LevelDebug = log.LevelDebug
 )

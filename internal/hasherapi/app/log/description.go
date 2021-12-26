@@ -24,5 +24,4 @@ const (
 	ComponentHashCalculator = "hash_calculator"
 	ComponentHashStorage    = "hash_storage"
 	ComponentHTTPAPI        = "http_api"
-	ComponentHTTPLogger     = "http_api_logger"
 )

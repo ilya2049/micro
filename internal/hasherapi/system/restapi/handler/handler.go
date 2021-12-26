@@ -7,10 +7,11 @@ import (
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 	"hasherapi/system/hash/calculator"
-	inmemoryStorage "hasherapi/system/hash/storage/inmemory"
+	"hasherapi/system/hash/storage"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
 	"net/http"
+	"runtime"
 	"time"
 )
 
@@ -24,7 +25,19 @@ func New() *Handler {
 	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)
 	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, aLogger)
 
-	hashStorage := apphash.WrapStorageWithLogger(inmemoryStorage.NewHashStorage(), aLogger)
+	var hashStorage hash.Storage
+	hashStorage, err := storage.New(storage.Config{
+		Address:  "redis:6379",
+		Password: "123456789",
+	}, aLogger)
+
+	if err != nil {
+		aLogger.LogError("failed to create a hash storage: "+err.Error(), log.NoDetails())
+
+		runtime.Goexit()
+	}
+
+	hashStorage = apphash.WrapStorageWithLogger(hashStorage, aLogger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
 	errorResponderFactory := middlewares.NewResponderFactory(aLogger)
