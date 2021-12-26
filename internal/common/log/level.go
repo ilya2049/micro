@@ -3,7 +3,8 @@ package log
 type Level int32
 
 const (
-	LevelError Level = iota
+	LevelFatal Level = iota
+	LevelError
 	LevelWarning
 	LevelInfo
 	LevelDebug

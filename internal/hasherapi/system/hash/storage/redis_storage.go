@@ -40,7 +40,7 @@ func New(cfg Config, logger log.Logger) (*RedisStorage, error) {
 	defer cancel()
 
 	if err := rdb.ScriptFlush(ctx).Err(); err != nil {
-		logger.LogWarn("failed to flush lua script", log.Details{
+		logger.LogWarn("failed to flush lua script: "+err.Error(), log.Details{
 			log.FieldComponent: log.ComponentHashStorage,
 		})
 	}
@@ -48,7 +48,7 @@ func New(cfg Config, logger log.Logger) (*RedisStorage, error) {
 	scriptLoadingResult := rdb.ScriptLoad(ctx, saveHashesScript)
 	if err := scriptLoadingResult.Err(); err != nil {
 		return nil, errors.Errorf(
-			"%s: failed load lua script: %w", log.ComponentHashStorage, err,
+			"%s: failed to load lua script: %w", log.ComponentHashStorage, err,
 		)
 	}
 

@@ -2,6 +2,7 @@ package logrus
 
 import (
 	"common/log"
+	"os"
 
 	formatter "github.com/fabienm/go-logrus-formatters"
 	graylog "github.com/gemnasium/logrus-graylog-hook"
@@ -49,6 +50,12 @@ func (lg *Logger) LogDebug(message string, details log.Details) {
 	lg.write(logrus.DebugLevel, message, details)
 }
 
+func (lg *Logger) LogFatal(message string, details log.Details) {
+	lg.write(logrus.FatalLevel, message, details)
+
+	os.Exit(1)
+}
+
 func (lg *Logger) Printf(message string, details ...interface{}) {
 	args := make([]interface{}, 0, len(details)+1)
 
@@ -70,6 +77,9 @@ func (lg *Logger) write(level logrus.Level, message string, details log.Details)
 
 func (lg *Logger) Level() log.Level {
 	switch lg.logrusLogger.Level {
+	case logrus.FatalLevel:
+		return log.LevelFatal
+
 	case logrus.ErrorLevel:
 		return log.LevelError
 

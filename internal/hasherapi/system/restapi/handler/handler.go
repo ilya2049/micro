@@ -11,7 +11,6 @@ import (
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
 	"net/http"
-	"runtime"
 	"time"
 )
 
@@ -32,9 +31,9 @@ func New() *Handler {
 	}, aLogger)
 
 	if err != nil {
-		aLogger.LogError("failed to create a hash storage: "+err.Error(), log.NoDetails())
-
-		runtime.Goexit()
+		aLogger.LogFatal("failed to create a hash storage: "+err.Error(), log.Details{
+			log.FieldComponent: log.ComponentAppInitializer,
+		})
 	}
 
 	hashStorage = apphash.WrapStorageWithLogger(hashStorage, aLogger)

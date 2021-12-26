@@ -2,9 +2,10 @@ package log
 
 type Logger interface {
 	LogInfo(message string, details Details)
+	LogFatal(message string, details Details)
+	LogDebug(message string, details Details)
 	LogError(message string, details Details)
 	LogWarn(message string, details Details)
-	LogDebug(message string, details Details)
 }
 
 type LevelProvider interface {
