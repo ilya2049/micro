@@ -8,7 +8,7 @@ import (
 	"hasherapi/domain/hash"
 	"time"
 
-	// Load resources in go binary
+	// To load resources in go binary
 	_ "embed"
 
 	"github.com/go-redis/redis/v8"
@@ -23,12 +23,12 @@ type Config struct {
 }
 
 type RedisStorage struct {
-	redisClient         *redis.Client
-	logger              log.Logger
-	saveHashesScriptSHA string
+	redisClient          *redis.Client
+	logger               log.Logger
+	saveHashesScriptSHA1 string
 }
 
-func New(cfg Config, logger log.Logger) (*RedisStorage, error) {
+func New(cfg Config, logger log.Logger) (redisStorage *RedisStorage, closeRedisConnections func(), err error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     cfg.Address,
 		Password: cfg.Password,
@@ -36,27 +36,61 @@ func New(cfg Config, logger log.Logger) (*RedisStorage, error) {
 
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
-
 	defer cancel()
 
-	if err := rdb.ScriptFlush(ctx).Err(); err != nil {
-		logger.LogWarn("failed to flush lua script: "+err.Error(), log.Details{
+	if err := rdb.Ping(ctx).Err(); err != nil {
+		return nil, nil, errors.Errorf(
+			"%s: failed to connect redis: %w", log.ComponentHashStorage, err,
+		)
+	}
+
+	logger.LogInfo("redis connection established", log.Details{
+		log.FieldComponent: log.ComponentHashStorage,
+	})
+
+	scriptSHA1, err := reloadScript(ctx, rdb)
+	if err != nil {
+		return nil, nil, errors.Errorf(
+			"%s: failed to reload the save hashes script: %w", log.ComponentHashStorage, err,
+		)
+	}
+
+	redisStorage = &RedisStorage{
+		redisClient:          rdb,
+		logger:               logger,
+		saveHashesScriptSHA1: scriptSHA1,
+	}
+
+	closeRedisConnections = func() {
+		if err := rdb.Close(); err != nil {
+			logger.LogWarn("failed to close redis connections: "+err.Error(), log.Details{
+				log.FieldComponent: log.ComponentHashStorage,
+			})
+
+			return
+		}
+
+		logger.LogInfo("redis connections successfully closed", log.Details{
 			log.FieldComponent: log.ComponentHashStorage,
 		})
 	}
 
-	scriptLoadingResult := rdb.ScriptLoad(ctx, saveHashesScript)
-	if err := scriptLoadingResult.Err(); err != nil {
-		return nil, errors.Errorf(
-			"%s: failed to load lua script: %w", log.ComponentHashStorage, err,
+	return redisStorage, closeRedisConnections, nil
+}
+
+func reloadScript(ctx context.Context, rdb *redis.Client) (scriptSHA1 string, err error) {
+	tx := rdb.TxPipeline()
+
+	tx.ScriptFlush(ctx)
+	scriptLoadingResult := tx.ScriptLoad(ctx, saveHashesScript)
+
+	if _, err := tx.Exec(ctx); err != nil {
+		return "", errors.Errorf(
+			"%s: failed to reload lua script: %w", log.ComponentHashStorage, err,
 		)
 	}
 
-	return &RedisStorage{
-		redisClient:         rdb,
-		logger:              logger,
-		saveHashesScriptSHA: scriptLoadingResult.String(),
-	}, nil
+	return scriptLoadingResult.Val(), nil
 }
 
 const (
@@ -64,17 +98,17 @@ const (
 )
 
 func (s *RedisStorage) Save(ctx context.Context, sha3Hashes hash.SHA3Hashes) ([]hash.IdentifiedSHA3Hash, error) {
-	evalResult := s.redisClient.Eval(ctx, saveHashesScript,
+	saveHashesScriptResult := s.redisClient.EvalSha(ctx, s.saveHashesScriptSHA1,
 		[]string{idGeneratorKey}, sha3HashesToEmptyInterfaces(sha3Hashes)...,
 	)
 
-	if err := evalResult.Err(); err != nil {
+	if err := saveHashesScriptResult.Err(); err != nil {
 		return []hash.IdentifiedSHA3Hash{}, errors.Errorf(
 			"%s: failed to save sha3 hashes in redis storage: %w", log.ComponentHashStorage, err,
 		)
 	}
 
-	generatedIDs, err := evalResult.Int64Slice()
+	generatedIDs, err := saveHashesScriptResult.Int64Slice()
 	if err != nil {
 		return []hash.IdentifiedSHA3Hash{}, errors.Errorf(
 			"%s: failed to retreive generated ids from redis storage: %w", log.ComponentHashStorage, err,

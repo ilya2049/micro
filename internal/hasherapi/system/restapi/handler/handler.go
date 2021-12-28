@@ -15,42 +15,44 @@ import (
 )
 
 func New() *Handler {
-	aLogger := logrus.NewLogger(logrus.Config{
+	logger := logrus.NewLogger(logrus.Config{
 		GraylogHost: "graylog:12201",
 		ServiceHost: "hasherapi",
 	})
 
 	var hashCalculator hash.Calculator
-	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, aLogger)
-	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, aLogger)
+	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, logger)
+	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, logger)
 
 	var hashStorage hash.Storage
-	hashStorage, err := storage.New(storage.Config{
+	hashStorage, closeRedisConnectionsFunc, err := storage.New(storage.Config{
 		Address:  "redis:6379",
 		Password: "123456789",
-	}, aLogger)
+	}, logger)
 
 	if err != nil {
-		aLogger.LogFatal("failed to create a hash storage: "+err.Error(), log.Details{
+		logger.LogFatal("failed to create a hash storage: "+err.Error(), log.Details{
 			log.FieldComponent: log.ComponentAppInitializer,
 		})
 	}
 
-	hashStorage = apphash.WrapStorageWithLogger(hashStorage, aLogger)
+	hashStorage = apphash.WrapStorageWithLogger(hashStorage, logger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
-	errorResponderFactory := middlewares.NewResponderFactory(aLogger)
+	errorResponderFactory := middlewares.NewResponderFactory(logger)
 
 	return &Handler{
-		hashHandler: newHashHandler(hashService, errorResponderFactory),
-		aLogger:     aLogger,
+		hashHandler:           newHashHandler(hashService, errorResponderFactory),
+		logger:                logger,
+		closeRedisConnections: closeRedisConnectionsFunc,
 	}
 }
 
 type Handler struct {
 	*hashHandler
 
-	aLogger log.Logger
+	closeRedisConnections func()
+	logger                log.Logger
 }
 
 func (h *Handler) ConfigureFlags(api *operations.HasherapiAPI) {}
@@ -60,7 +62,11 @@ func (h *Handler) ConfigureTLS(tlsConfig *tls.Config) {}
 func (h *Handler) ConfigureServer(s *http.Server, scheme, addr string) {}
 
 func (h *Handler) CustomConfigure(api *operations.HasherapiAPI) {
-	api.Logger = h.aLogger.Printf
+	api.Logger = h.logger.Printf
+
+	api.ServerShutdown = func() {
+		h.closeRedisConnections()
+	}
 }
 
 func (h *Handler) SetupMiddlewares(handler http.Handler) http.Handler {
@@ -68,7 +74,7 @@ func (h *Handler) SetupMiddlewares(handler http.Handler) http.Handler {
 }
 
 func (h *Handler) SetupGlobalMiddleware(handler http.Handler) http.Handler {
-	handler = middlewares.Logging(handler, h.aLogger)
+	handler = middlewares.Logging(handler, h.logger)
 	handler = middlewares.TraceRequest(handler)
 
 	return handler
