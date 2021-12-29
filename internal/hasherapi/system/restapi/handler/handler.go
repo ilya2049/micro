@@ -17,18 +17,18 @@ import (
 )
 
 func New() *Handler {
-	var logger log.Logger
-
-	configProvider, stopConfigWatching, err := config.NewProvider(logger)
+	configProvider, err := config.NewProvider()
 	if err != nil {
-		stdlog.Fatal("failed to create a configurator: " + err.Error())
+		stdlog.Fatalf("%s: failed to create a configurator: %s", log.ComponentAppInitializer, err.Error())
 	}
 
-	logger = logrus.NewLogger(logrus.Config{
+	logger := logrus.NewLogger(logrus.Config{
 		GraylogHost:   configProvider.Logger().Graylog.Host,
 		GraylogSource: configProvider.Logger().Graylog.Source,
 		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
+
+	stopConfigWatching := config.Watch(configProvider, logger)
 
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator(func() calculator.Config {

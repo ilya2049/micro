@@ -8,19 +8,23 @@ import (
 	"sync"
 )
 
-func NewProvider(logger log.Logger) (provider *Provider, stopConfigWatching func(), err error) {
+func NewProvider() (provider *Provider, err error) {
 	remoteConfig, err := config.NewRemoteConfig(defaultConfig(), "HASHERAPI")
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	provider = &Provider{remoteConfig: remoteConfig}
 
 	if err := provider.UpdateConfig(); err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	watcher := config.NewWatcher(provider, remoteConfig, func(e error) {
+	return provider, nil
+}
+
+func Watch(provider *Provider, logger log.Logger) (stopWatchingFunc func()) {
+	watcher := config.NewWatcher(provider, provider.remoteConfig, func(e error) {
 		logger.LogError(e.Error(), log.Details{
 			log.FieldComponent: log.ComponentConfigurator,
 		})
@@ -31,7 +35,7 @@ func NewProvider(logger log.Logger) (provider *Provider, stopConfigWatching func
 
 	go watcher.Watch(ctx)
 
-	return provider, cancel, nil
+	return cancel
 }
 
 type Provider struct {
