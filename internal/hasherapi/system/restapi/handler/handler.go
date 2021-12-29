@@ -58,6 +58,8 @@ func New() *Handler {
 	}, logger)
 
 	if err != nil {
+		cleanupFuncs.Invoke()
+
 		logger.LogFatal("failed to create a hash storage: "+err.Error(), log.Details{
 			log.FieldComponent: log.ComponentAppInitializer,
 		})

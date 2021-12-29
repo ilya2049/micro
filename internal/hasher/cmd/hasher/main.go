@@ -64,6 +64,8 @@ func main() {
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
+				cleanupFuncs.Invoke()
+
 				logger.LogFatal("server error: "+err.Error(), log.Details{
 					log.FieldComponent: log.ComponentGRPCAPI,
 				})
