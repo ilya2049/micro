@@ -1,7 +1,8 @@
 package log
 
+import "common/log"
+
 const (
-	FieldRequestID  = "request_id"
 	FieldHTTPQuery  = "query"
 	FieldHTTPBody   = "body"
 	FieldHTTPStatus = "status"
@@ -16,14 +17,18 @@ const (
 	FieldHashSHA3Hashes           = "sha3_hashes"
 	FieldHashIdentifiedSHA3Hashes = "identified_sha3_hashes"
 	FieldHashIDs                  = "hash_ids"
-	FieldComponent                = "component"
-	FieldStackTrace               = "stack_trace"
+)
+
+const (
+	FieldRequestID  = log.FieldRequestID
+	FieldComponent  = log.FieldComponent
+	FieldStackTrace = log.FieldStackTrace
 )
 
 const (
 	ComponentHashCalculator = "hash_calculator"
 	ComponentHashStorage    = "hash_storage"
 	ComponentHTTPAPI        = "http_api"
-	ComponentAppInitializer = "app_initializer"
-	ComponentConfigurator   = "configurator"
+	ComponentAppInitializer = log.ComponentAppInitializer
+	ComponentConfigurator   = log.ComponentConfigurator
 )

@@ -3,6 +3,7 @@ package hash
 import (
 	"common/requestid"
 	"context"
+	"fmt"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 )
@@ -29,7 +30,7 @@ func (s *storageLoggingWrapper) Save(ctx context.Context, sha3Hashes hash.SHA3Ha
 		log.FieldRequestID:                requestID,
 		log.FieldHashSHA3Hashes:           sha3Hashes,
 		log.FieldComponent:                log.ComponentHashStorage,
-		log.FieldHashIdentifiedSHA3Hashes: identifiesSHA3Hashes,
+		log.FieldHashIdentifiedSHA3Hashes: fmt.Sprint(identifiesSHA3Hashes),
 	})
 
 	return identifiesSHA3Hashes, err
@@ -44,7 +45,7 @@ func (s *storageLoggingWrapper) Get(ctx context.Context, hashIDs []hash.ID) ([]h
 		log.FieldRequestID:                requestID,
 		log.FieldHashIDs:                  hashIDs,
 		log.FieldComponent:                log.ComponentHashStorage,
-		log.FieldHashIdentifiedSHA3Hashes: identifiesSHA3Hashes,
+		log.FieldHashIdentifiedSHA3Hashes: fmt.Sprint(identifiesSHA3Hashes),
 	})
 
 	return identifiesSHA3Hashes, err

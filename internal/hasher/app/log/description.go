@@ -1,15 +1,20 @@
 package log
 
+import "common/log"
+
 const (
-	FieldRequestID    = "request_id"
 	FieldGRPCMetadata = "metadata"
-	FieldComponent    = "component"
-	FieldStackTrace   = "stack_trace"
 )
 
 const (
 	FieldHashInputs     = "hash_inputs"
 	FieldHashSHA3Hashes = "sha3_hashes"
+)
+
+const (
+	FieldRequestID  = log.FieldRequestID
+	FieldComponent  = log.FieldComponent
+	FieldStackTrace = log.FieldStackTrace
 )
 
 const (
