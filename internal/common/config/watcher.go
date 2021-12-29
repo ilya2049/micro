@@ -13,12 +13,14 @@ type ConfigUpdater interface {
 func NewWatcher(
 	configUpdater ConfigUpdater,
 	aRemoteConfig RemoteConfig,
+	triggers []Trigger,
 	watchingErrorHandler func(error),
 ) *Watcher {
 	return &Watcher{
 		configUpdater:       configUpdater,
 		aRemoteConfig:       aRemoteConfig,
 		handleWatchingError: watchingErrorHandler,
+		triggers:            triggers,
 
 		watchingErrorChan: make(chan error),
 	}
@@ -27,6 +29,7 @@ func NewWatcher(
 type Watcher struct {
 	configUpdater ConfigUpdater
 	aRemoteConfig RemoteConfig
+	triggers      []Trigger
 
 	handleWatchingError func(error)
 	watchingErrorChan   chan error
@@ -67,5 +70,9 @@ func (w *Watcher) updateConfig() {
 
 	if err := w.configUpdater.UpdateConfig(); err != nil {
 		w.watchingErrorChan <- errors.Errorf("%s: failed to update config: %w", watcherComponentName, err)
+	}
+
+	for _, trigger := range w.triggers {
+		trigger()
 	}
 }

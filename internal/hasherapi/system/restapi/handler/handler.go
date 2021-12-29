@@ -1,6 +1,7 @@
 package handler
 
 import (
+	commonConfig "common/config"
 	"common/log/logrus"
 	"crypto/tls"
 	apphash "hasherapi/app/hash"
@@ -22,13 +23,17 @@ func New() *Handler {
 		stdlog.Fatalf("%s: failed to create a configurator: %s", log.ComponentAppInitializer, err.Error())
 	}
 
-	logger := logrus.NewLogger(logrus.Config{
+	logger, updateLogLevel := logrus.NewLogger(logrus.Config{
 		GraylogHost:   configProvider.Logger().Graylog.Host,
 		GraylogSource: configProvider.Logger().Graylog.Source,
 		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
 
-	stopConfigWatching := config.Watch(configProvider, logger)
+	stopConfigWatching := config.Watch(configProvider, logger, []commonConfig.Trigger{
+		commonConfig.Trigger(func() {
+			updateLogLevel(log.Level(configProvider.Logger().Level))
+		}),
+	})
 
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator(func() calculator.Config {

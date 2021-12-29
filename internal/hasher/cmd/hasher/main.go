@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	aLogger := logrus.NewLogger(logrus.Config{
+	aLogger, _ := logrus.NewLogger(logrus.Config{
 		GraylogHost:   "graylog:12201",
 		GraylogSource: "hasher",
 	})

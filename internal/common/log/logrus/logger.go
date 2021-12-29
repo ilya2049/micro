@@ -15,7 +15,7 @@ type Config struct {
 	LogLevel      log.Level
 }
 
-func NewLogger(cfg Config) *Logger {
+func NewLogger(cfg Config) (logger *Logger, updateLogLevel func(log.Level)) {
 	logrusLogger := logrus.New()
 
 	gelfFormatter := formatter.NewGelf(cfg.GraylogSource)
@@ -26,9 +26,10 @@ func NewLogger(cfg Config) *Logger {
 	graylogHook := graylog.NewGraylogHook(cfg.GraylogHost, map[string]interface{}{})
 	logrusLogger.AddHook(graylogHook)
 
-	return &Logger{
-		logrusLogger: logrusLogger,
-	}
+	return &Logger{logrusLogger: logrusLogger},
+		func(level log.Level) {
+			logrusLogger.SetLevel(logLevelToLogrusLevel(level))
+		}
 }
 
 type Logger struct {
