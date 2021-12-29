@@ -6,6 +6,8 @@ services:
     build:
       context: ../
       dockerfile: build/hasherapi/Dockerfile
+      args:
+        - PORT=8088 
     environment:
       - HASHERAPI_CONSUL_HOST=consul:8500
       - HASHERAPI_CONSUL_CONFIGKEY=config/hasherapi
