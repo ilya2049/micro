@@ -5,7 +5,11 @@ type Func func()
 type Funcs []Func
 
 func (fns Funcs) Invoke() {
-	for i := len(fns); i >= 0; i-- {
+	if len(fns) == 0 {
+		return
+	}
+
+	for i := len(fns) - 1; i >= 0; i-- {
 		fns[i]()
 	}
 }
