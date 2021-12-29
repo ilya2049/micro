@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"common/cleanup"
 	commonConfig "common/config"
 	"common/log/logrus"
 	"crypto/tls"
@@ -29,11 +30,15 @@ func New() *Handler {
 		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
 
+	cleanupFuncs := cleanup.Funcs{}
+
 	stopConfigWatching := config.Watch(configProvider, logger, []commonConfig.Trigger{
 		commonConfig.Trigger(func() {
 			updateLogLevel(log.Level(configProvider.Logger().Level))
 		}),
 	})
+
+	cleanupFuncs = append(cleanupFuncs, stopConfigWatching)
 
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator(func() calculator.Config {
@@ -58,25 +63,25 @@ func New() *Handler {
 		})
 	}
 
+	cleanupFuncs = append(cleanupFuncs, closeRedisConnectionsFunc)
+
 	hashStorage = apphash.WrapStorageWithLogger(hashStorage, logger)
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
 	errorResponderFactory := middlewares.NewResponderFactory(logger)
 
 	return &Handler{
-		hashHandler:           newHashHandler(hashService, errorResponderFactory),
-		logger:                logger,
-		closeRedisConnections: closeRedisConnectionsFunc,
-		stopConfigWatching:    stopConfigWatching,
+		hashHandler:  newHashHandler(hashService, errorResponderFactory),
+		cleanupFuncs: cleanupFuncs,
+		logger:       logger,
 	}
 }
 
 type Handler struct {
 	*hashHandler
 
-	closeRedisConnections func()
-	stopConfigWatching    func()
-	logger                log.Logger
+	cleanupFuncs cleanup.Funcs
+	logger       log.Logger
 }
 
 func (h *Handler) ConfigureFlags(api *operations.HasherapiAPI) {}
@@ -89,7 +94,7 @@ func (h *Handler) CustomConfigure(api *operations.HasherapiAPI) {
 	api.Logger = h.logger.Printf
 
 	api.ServerShutdown = func() {
-		h.closeRedisConnections()
+		h.cleanupFuncs.Invoke()
 	}
 }
 

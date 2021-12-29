@@ -1,6 +1,7 @@
 package main
 
 import (
+	"common/cleanup"
 	commonConfig "common/config"
 	"common/errors"
 	"common/hasherproto"
@@ -31,11 +32,15 @@ func main() {
 		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
 
+	cleanupFuncs := cleanup.Funcs{}
+
 	stopConfigWatching := config.Watch(configProvider, logger, []commonConfig.Trigger{
 		commonConfig.Trigger(func() {
 			updateLogLevel(log.Level(configProvider.Logger().Level))
 		}),
 	})
+
+	cleanupFuncs = append(cleanupFuncs, stopConfigWatching)
 
 	listener, err := net.Listen("tcp", configProvider.GRPC().Host)
 	if err != nil {
@@ -72,7 +77,7 @@ func main() {
 	<-quit
 
 	grpcServer.GracefulStop()
-	stopConfigWatching()
+	cleanupFuncs.Invoke()
 
 	logger.LogInfo(log.ComponentGRPCAPI+" is shut down gracefully", log.NoDetails())
 }
