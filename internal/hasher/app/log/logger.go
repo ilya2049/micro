@@ -10,10 +10,15 @@ type Logger interface {
 
 type Details = log.Details
 
-const (
-	LevelDebug = log.LevelDebug
-)
-
-func NoDetails() log.Details {
+func NoDetails() Details {
 	return nil
 }
+
+type Level = log.Level
+
+const (
+	LevelError   = log.LevelError
+	LevelWarning = log.LevelWarning
+	LevelInfo    = log.LevelInfo
+	LevelDebug   = log.LevelDebug
+)

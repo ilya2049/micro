@@ -35,6 +35,9 @@ services:
     build:
       context: ../
       dockerfile: build/hasher/Dockerfile
+    environment:
+      - HASHER_CONSUL_HOST=consul:8500
+      - HASHER_CONSUL_CONFIGKEY=config/hasher
     depends_on:
       - graylog
       - consul

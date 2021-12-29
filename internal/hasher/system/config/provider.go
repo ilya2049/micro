@@ -3,12 +3,12 @@ package config
 import (
 	"common/config"
 	"common/errors"
-	"hasherapi/app/log"
+	"hasher/app/log"
 	"sync"
 )
 
 func NewProvider() (provider *Provider, err error) {
-	remoteConfig, err := config.NewRemoteConfig(defaultConfig(), "HASHERAPI")
+	remoteConfig, err := config.NewRemoteConfig(defaultConfig(), "HASHER")
 	if err != nil {
 		return nil, err
 	}

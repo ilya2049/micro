@@ -17,3 +17,18 @@ curl --request PUT \
     "password": "123456789"
   }
 }'
+
+curl --request PUT \
+"http://127.0.0.1:8500/v1/kv/config/hasher" \
+--data '{
+  "logger": {
+    "level": "debug",
+    "graylog": {
+      "host": "graylog:12201",
+      "source": "hasher"
+    }
+  },
+  "grpc": {
+    "host": ":8090"
+  }
+}'

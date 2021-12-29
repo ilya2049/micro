@@ -1,11 +1,14 @@
 package main
 
 import (
+	commonConfig "common/config"
 	"common/errors"
 	"common/hasherproto"
 	"common/log/logrus"
 	"hasher/app/log"
+	"hasher/system/config"
 	"hasher/system/grpcapi"
+	stdlog "log"
 	"net"
 	"net/http"
 	"os"
@@ -17,34 +20,46 @@ import (
 )
 
 func main() {
-	aLogger, _ := logrus.NewLogger(logrus.Config{
-		GraylogHost:   "graylog:12201",
-		GraylogSource: "hasher",
+	configProvider, err := config.NewProvider()
+	if err != nil {
+		stdlog.Fatalf("%s: failed to create a configurator: %s", log.ComponentAppInitializer, err.Error())
+	}
+
+	logger, updateLogLevel := logrus.NewLogger(logrus.Config{
+		GraylogHost:   configProvider.Logger().Graylog.Host,
+		GraylogSource: configProvider.Logger().Graylog.Source,
+		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
 
-	listener, err := net.Listen("tcp", ":8090")
+	stopConfigWatching := config.Watch(configProvider, logger, []commonConfig.Trigger{
+		commonConfig.Trigger(func() {
+			updateLogLevel(log.Level(configProvider.Logger().Level))
+		}),
+	})
+
+	listener, err := net.Listen("tcp", configProvider.GRPC().Host)
 	if err != nil {
-		aLogger.LogFatal("failed to start server: "+err.Error(), log.Details{
+		logger.LogFatal("failed to start server: "+err.Error(), log.Details{
 			log.FieldComponent: log.ComponentGRPCAPI,
 		})
 	}
 
 	grpcServer := grpc.NewServer(grpc_middleware.WithUnaryServerChain(
-		grpcapi.InterceptorTraceRequest(aLogger),
-		grpcapi.InterceptorLogRequest(aLogger),
+		grpcapi.InterceptorTraceRequest(logger),
+		grpcapi.InterceptorLogRequest(logger),
 	))
 
-	grpcAPIServer := grpcapi.NewServer(aLogger)
+	grpcAPIServer := grpcapi.NewServer(logger)
 	hasherproto.RegisterHasherServiceServer(grpcServer, grpcAPIServer)
 
-	aLogger.LogInfo("server is ready to accept requests", log.Details{
+	logger.LogInfo("server is ready to accept requests", log.Details{
 		log.FieldComponent: log.ComponentGRPCAPI,
 	})
 
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
-				aLogger.LogFatal("server error: "+err.Error(), log.Details{
+				logger.LogFatal("server error: "+err.Error(), log.Details{
 					log.FieldComponent: log.ComponentGRPCAPI,
 				})
 			}
@@ -57,6 +72,7 @@ func main() {
 	<-quit
 
 	grpcServer.GracefulStop()
+	stopConfigWatching()
 
-	aLogger.LogInfo(log.ComponentGRPCAPI+" is shut down gracefully", log.NoDetails())
+	logger.LogInfo(log.ComponentGRPCAPI+" is shut down gracefully", log.NoDetails())
 }

@@ -13,7 +13,9 @@ const (
 )
 
 const (
-	ComponentRequestTracer = "request_tracer"
-	ComponentGRPCAPI       = "grpc_api"
-	ComponentHasher        = "hasher"
+	ComponentRequestTracer  = "request_tracer"
+	ComponentGRPCAPI        = "grpc_api"
+	ComponentHasher         = "hasher"
+	ComponentConfigurator   = "configurator"
+	ComponentAppInitializer = "app_initializer"
 )
