@@ -1,11 +1,23 @@
 FROM golang:1.17 AS builder
+
+WORKDIR /go/src
+
+COPY internal/hasherapi/go.mod hasherapi/
+COPY internal/hasherapi/go.sum hasherapi/
+
+COPY internal/common/go.mod common/
+COPY internal/common/go.sum common/
+
+RUN cd hasherapi && go mod download
+RUN cd common && go mod download
+
 ARG PORT
 
-COPY ./internal/hasherapi /go/src/hasherapi
-COPY ./internal/common /go/src/common
-WORKDIR /go/src/hasherapi/cmd/hasherapi
+COPY internal/hasherapi hasherapi
+COPY internal/common common
 
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags='-w -s' -o /go/bin/hasherapi
+RUN cd hasherapi/cmd/hasherapi && \
+    GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build --ldflags='-w -s' -o /go/bin/hasherapi
 
 FROM alpine:3.15.0
 ARG PORT
