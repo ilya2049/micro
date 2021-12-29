@@ -25,14 +25,18 @@ func New() *Handler {
 	}
 
 	logger = logrus.NewLogger(logrus.Config{
-		GraylogHost:   configProvider.Graylog().Host,
-		GraylogSource: configProvider.Graylog().Source,
+		GraylogHost:   configProvider.Logger().Graylog.Host,
+		GraylogSource: configProvider.Logger().Graylog.Source,
+		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
 
 	var hashCalculator hash.Calculator
-	hashCalculator = calculator.NewGRPCCalculator(
-		configProvider.Hasher().Host,
-		time.Duration(configProvider.Hasher().TimeoutSec)*time.Second,
+	hashCalculator = calculator.NewGRPCCalculator(func() calculator.Config {
+		return calculator.Config{
+			URL:     configProvider.Hasher().Host,
+			Timeout: time.Duration(configProvider.Hasher().TimeoutSec) * time.Second,
+		}
+	},
 		logger,
 	)
 	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, logger)

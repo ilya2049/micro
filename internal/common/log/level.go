@@ -1,11 +1,11 @@
 package log
 
-type Level int32
+type Level string
 
 const (
-	LevelFatal Level = iota
-	LevelError
-	LevelWarning
-	LevelInfo
-	LevelDebug
+	LevelFatal   Level = "fatal"
+	LevelError   Level = "error"
+	LevelWarning Level = "warning"
+	LevelInfo    Level = "info"
+	LevelDebug   Level = "debug"
 )

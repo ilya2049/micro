@@ -17,26 +17,33 @@ import (
 	"common/hasherproto"
 )
 
-type GRPCCalculator struct {
-	url     string
-	timeout time.Duration
-	logger  log.Logger
+type DynamicConfig func() Config
+
+type Config struct {
+	URL     string
+	Timeout time.Duration
 }
 
-func NewGRPCCalculator(url string, timeout time.Duration, logger log.Logger) *GRPCCalculator {
+type GRPCCalculator struct {
+	cfg DynamicConfig
+
+	logger log.Logger
+}
+
+func NewGRPCCalculator(cfg DynamicConfig, logger log.Logger) *GRPCCalculator {
 	return &GRPCCalculator{
-		url:     url,
-		timeout: timeout,
-		logger:  logger,
+		cfg:    cfg,
+		logger: logger,
 	}
 }
 
 func (c *GRPCCalculator) openConnection(ctx context.Context) (*grpcutil.Connection, error) {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	cfg := c.cfg()
+	ctx, cancel := context.WithTimeout(ctx, cfg.Timeout)
 
 	clientConnection, err := grpc.DialContext(
 		ctx,
-		c.url,
+		cfg.URL,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
 	)

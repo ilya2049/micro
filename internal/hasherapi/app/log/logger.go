@@ -16,6 +16,11 @@ func NoDetails() Details {
 	return nil
 }
 
+type Level = log.Level
+
 const (
-	LevelDebug = log.LevelDebug
+	LevelError   = log.LevelError
+	LevelWarning = log.LevelWarning
+	LevelInfo    = log.LevelInfo
+	LevelDebug   = log.LevelDebug
 )
