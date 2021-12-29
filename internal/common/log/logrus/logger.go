@@ -10,14 +10,14 @@ import (
 )
 
 type Config struct {
-	GraylogHost string
-	ServiceHost string
+	GraylogHost   string
+	GraylogSource string
 }
 
 func NewLogger(cfg Config) *Logger {
 	logrusLogger := logrus.New()
 
-	gelfFormatter := formatter.NewGelf(cfg.ServiceHost)
+	gelfFormatter := formatter.NewGelf(cfg.GraylogSource)
 
 	logrusLogger.SetFormatter(gelfFormatter)
 	logrusLogger.SetLevel(logrus.DebugLevel)

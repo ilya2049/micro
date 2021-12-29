@@ -6,28 +6,41 @@ import (
 	apphash "hasherapi/app/hash"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
+	"hasherapi/system/config"
 	"hasherapi/system/hash/calculator"
 	"hasherapi/system/hash/storage"
 	"hasherapi/system/restapi/middlewares"
 	"hasherapi/system/restapi/operations"
+	stdlog "log"
 	"net/http"
 	"time"
 )
 
 func New() *Handler {
-	logger := logrus.NewLogger(logrus.Config{
-		GraylogHost: "graylog:12201",
-		ServiceHost: "hasherapi",
+	var logger log.Logger
+
+	configProvider, stopConfigWatching, err := config.NewProvider(logger)
+	if err != nil {
+		stdlog.Fatal("failed to create a configurator: " + err.Error())
+	}
+
+	logger = logrus.NewLogger(logrus.Config{
+		GraylogHost:   configProvider.Graylog().Host,
+		GraylogSource: configProvider.Graylog().Source,
 	})
 
 	var hashCalculator hash.Calculator
-	hashCalculator = calculator.NewGRPCCalculator("hasher:8090", 1*time.Second, logger)
+	hashCalculator = calculator.NewGRPCCalculator(
+		configProvider.Hasher().Host,
+		time.Duration(configProvider.Hasher().TimeoutSec)*time.Second,
+		logger,
+	)
 	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, logger)
 
 	var hashStorage hash.Storage
 	hashStorage, closeRedisConnectionsFunc, err := storage.New(storage.Config{
-		Address:  "redis:6379",
-		Password: "123456789",
+		Address:  configProvider.Redis().Host,
+		Password: configProvider.Redis().Password,
 	}, logger)
 
 	if err != nil {
@@ -45,6 +58,7 @@ func New() *Handler {
 		hashHandler:           newHashHandler(hashService, errorResponderFactory),
 		logger:                logger,
 		closeRedisConnections: closeRedisConnectionsFunc,
+		stopConfigWatching:    stopConfigWatching,
 	}
 }
 
@@ -52,6 +66,7 @@ type Handler struct {
 	*hashHandler
 
 	closeRedisConnections func()
+	stopConfigWatching    func()
 	logger                log.Logger
 }
 

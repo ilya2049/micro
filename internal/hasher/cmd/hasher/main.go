@@ -18,8 +18,8 @@ import (
 
 func main() {
 	aLogger := logrus.NewLogger(logrus.Config{
-		GraylogHost: "graylog:12201",
-		ServiceHost: "hasher",
+		GraylogHost:   "graylog:12201",
+		GraylogSource: "hasher",
 	})
 
 	listener, err := net.Listen("tcp", ":8090")

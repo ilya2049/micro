@@ -6,7 +6,11 @@ services:
     build:
       context: ../
       dockerfile: build/hasherapi/Dockerfile
+    environment:
+      - HASHERAPI_CONSUL_HOST=consul:8500
+      - HASHERAPI_CONSUL_CONFIGKEY=config/hasherapi
     depends_on:
+      - consul
       - hasher
       - redis
       - graylog
@@ -33,6 +37,7 @@ services:
       dockerfile: build/hasher/Dockerfile
     depends_on:
       - graylog
+      - consul
     ports:
       - "8090:8090"
 
@@ -67,3 +72,8 @@ services:
       resources:
         limits:
           memory: 1g
+
+  consul:
+    image: consul:1.10.3
+    ports:
+      - "8500:8500"
