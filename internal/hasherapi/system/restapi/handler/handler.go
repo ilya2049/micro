@@ -5,10 +5,12 @@ import (
 	commonConfig "common/config"
 	"common/log/logrus"
 	"crypto/tls"
+	"hasherapi/app/event"
 	apphash "hasherapi/app/hash"
 	"hasherapi/app/log"
 	"hasherapi/domain/hash"
 	"hasherapi/system/config"
+	"hasherapi/system/eventstream"
 	"hasherapi/system/hash/calculator"
 	"hasherapi/system/hash/storage"
 	"hasherapi/system/restapi/middlewares"
@@ -19,18 +21,21 @@ import (
 )
 
 func New() *Handler {
+	/* --- Cleanup funcs ----------------------- */
+	cleanupFuncs := cleanup.Funcs{}
+
+	/* --- Config ----------------------- */
 	configProvider, err := config.NewProvider()
 	if err != nil {
 		stdlog.Fatalf("%s: failed to create a configurator: %s", log.ComponentAppInitializer, err.Error())
 	}
 
+	/* --- Logger ----------------------- */
 	logger, updateLogLevel := logrus.NewLogger(logrus.Config{
 		GraylogHost:   configProvider.Logger().Graylog.Host,
 		GraylogSource: configProvider.Logger().Graylog.Source,
 		LogLevel:      log.Level(configProvider.Logger().Level),
 	})
-
-	cleanupFuncs := cleanup.Funcs{}
 
 	stopConfigWatching := config.Watch(configProvider, logger, []commonConfig.Trigger{
 		commonConfig.Trigger(func() {
@@ -40,6 +45,17 @@ func New() *Handler {
 
 	cleanupFuncs = append(cleanupFuncs, stopConfigWatching)
 
+	/* --- Event stream ----------------------- */
+	kafkaWriter, disconnectKafka := eventstream.NewKafkaWriter(eventstream.KafkaWriterConfig{
+		Host:  configProvider.Kafka().Host,
+		Topic: configProvider.Kafka().Topic,
+	}, logger)
+	cleanupFuncs = append(cleanupFuncs, disconnectKafka)
+
+	eventStream, stopStream := eventstream.New(kafkaWriter, logger, 2)
+	cleanupFuncs = append(cleanupFuncs, stopStream)
+
+	/* --- Hash calculator ----------------------- */
 	var hashCalculator hash.Calculator
 	hashCalculator = calculator.NewGRPCCalculator(func() calculator.Config {
 		return calculator.Config{
@@ -51,6 +67,7 @@ func New() *Handler {
 	)
 	hashCalculator = apphash.WrapCalculatorWithLogger(hashCalculator, logger)
 
+	/* --- Hash storage ----------------------- */
 	var hashStorage hash.Storage
 	hashStorage, closeRedisConnectionsFunc, err := storage.New(storage.Config{
 		Address:  configProvider.Redis().Host,
@@ -68,14 +85,18 @@ func New() *Handler {
 	cleanupFuncs = append(cleanupFuncs, closeRedisConnectionsFunc)
 
 	hashStorage = apphash.WrapStorageWithLogger(hashStorage, logger)
+
+	/* --- Hash service ----------------------- */
 	hashService := hash.NewService(hashCalculator, hashStorage)
 
+	/* --- REST api ----------------------- */
 	errorResponderFactory := middlewares.NewResponderFactory(logger)
 
 	return &Handler{
 		hashHandler:  newHashHandler(hashService, errorResponderFactory),
 		cleanupFuncs: cleanupFuncs,
 		logger:       logger,
+		eventStream:  eventStream,
 	}
 }
 
@@ -83,7 +104,9 @@ type Handler struct {
 	*hashHandler
 
 	cleanupFuncs cleanup.Funcs
-	logger       log.Logger
+
+	logger      log.Logger
+	eventStream event.Stream
 }
 
 func (h *Handler) ConfigureFlags(api *operations.HasherapiAPI) {}
@@ -107,6 +130,7 @@ func (h *Handler) SetupMiddlewares(handler http.Handler) http.Handler {
 func (h *Handler) SetupGlobalMiddleware(handler http.Handler) http.Handler {
 	handler = middlewares.Logging(handler, h.logger)
 	handler = middlewares.TraceRequest(handler)
+	handler = middlewares.RegisterCallEvents(handler, h.eventStream)
 
 	return handler
 }

@@ -15,6 +15,10 @@ curl --request PUT \
   "redis": {
     "host": "redis:6379",
     "password": "123456789"
+  },
+  "kafka": {
+    "host": "kafka:9092",
+    "topic": "http_calls"
   }
 }'
 

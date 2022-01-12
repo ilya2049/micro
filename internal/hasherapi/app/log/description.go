@@ -28,6 +28,7 @@ const (
 const (
 	ComponentHashCalculator = "hash_calculator"
 	ComponentHashStorage    = "hash_storage"
+	ComponentEventStream    = "event_stream"
 	ComponentHTTPAPI        = "http_api"
 	ComponentAppInitializer = log.ComponentAppInitializer
 	ComponentConfigurator   = log.ComponentConfigurator
