@@ -46,10 +46,17 @@ func New() *Handler {
 	cleanupFuncs = append(cleanupFuncs, stopConfigWatching)
 
 	/* --- Event stream ----------------------- */
-	kafkaWriter, disconnectKafka := eventstream.NewKafkaWriter(eventstream.KafkaWriterConfig{
-		Host:  configProvider.Kafka().Host,
-		Topic: configProvider.Kafka().Topic,
+	kafkaWriter, disconnectKafka, err := eventstream.NewKafkaWriter(eventstream.KafkaWriterConfig{
+		Host:     configProvider.Kafka().Host,
+		Username: configProvider.Kafka().Username,
+		Password: configProvider.Kafka().Password,
+		Topic:    configProvider.Kafka().Topic,
 	}, logger)
+
+	if err != nil {
+		stdlog.Fatalf("%s: failed to create a kafka writer: %s", log.ComponentAppInitializer, err.Error())
+	}
+
 	cleanupFuncs = append(cleanupFuncs, disconnectKafka)
 
 	eventStream, stopStream := eventstream.New(kafkaWriter, logger, 2)

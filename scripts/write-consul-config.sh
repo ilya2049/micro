@@ -17,7 +17,9 @@ curl --request PUT \
     "password": "123456789"
   },
   "kafka": {
-    "host": "kafka:9092",
+    "host": "kafka:9093",
+    "username": "adminscram",
+    "password": "admin-secret-512",
     "topic": "http_calls"
   }
 }'
